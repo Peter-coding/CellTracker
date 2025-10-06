@@ -1,0 +1,6 @@
+@CellTracker.Api_HostAddress = http://localhost:8000
+
+GET {{CellTracker.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

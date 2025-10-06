@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36429.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{454B7520-413D-4534-AE87-DA8F99002EC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellTracker.Api", "CellTracker.Api\CellTracker.Api.csproj", "{D57D490D-2823-44B0-AB55-B4FEC8B1254B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CellTracker.MqttIngestion", "..\CellTracker.MqttIngestion\CellTracker.MqttIngestion.csproj", "{A5D77A99-464A-4310-92A9-AE2BB0867D8F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D57D490D-2823-44B0-AB55-B4FEC8B1254B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D57D490D-2823-44B0-AB55-B4FEC8B1254B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D57D490D-2823-44B0-AB55-B4FEC8B1254B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D57D490D-2823-44B0-AB55-B4FEC8B1254B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5D77A99-464A-4310-92A9-AE2BB0867D8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5D77A99-464A-4310-92A9-AE2BB0867D8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5D77A99-464A-4310-92A9-AE2BB0867D8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5D77A99-464A-4310-92A9-AE2BB0867D8F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D57D490D-2823-44B0-AB55-B4FEC8B1254B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{A5D77A99-464A-4310-92A9-AE2BB0867D8F} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {717EFCEC-2EC1-4541-877E-56063AEFAEF6}
+	EndGlobalSection
+EndGlobal

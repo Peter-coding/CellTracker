@@ -1,0 +1,79 @@
+services:
+  celltracker.api:
+    image: ${DOCKER_REGISTRY-}celltrackerapi
+    container_name: api
+    build:
+      context: .
+      dockerfile: CellTracker.Api/Dockerfile
+    environment:
+      - DB_HOST=appdb
+      - DB_NAME=Tracker
+      - DB_USER=test
+      - DB_PASSWORD=test
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_BROKER_PORT=1883
+    ports:
+      - 5000:8080
+      - 5001:8081
+    depends_on:
+      - appdb
+      - celltracker.worker
+      - mosquitto
+
+  celltracker.worker:
+    image: ${DOCKER_REGISTRY-}celltrackerworker
+    container_name: worker
+    build:
+      context: .
+      dockerfile: ../CellTracker.MqttIngestion/Dockerfile
+    environment:
+      - DB_HOST=appdb
+      - DB_NAME=Tracker
+      - DB_USER=test
+      - DB_PASSWORD=test
+    depends_on:
+      - appdb
+      - mosquitto
+      - redis
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"  # WebSocket if needed
+    volumes:
+      - ./CellTracker.Api/Configuration/Mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+  
+  appdb:
+    image: postgres:latest
+    container_name: database
+    environment:
+      - POSTGRES_DB=Tracker
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    ports:
+      - 5432:5432
+  
+  redis:
+    image: redis:7.4-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    # volumes:
+    #   - redis_data:/data
+    # command: ["redis-server", "--appendonly", "yes"]
+    restart: unless-stopped
+
+  # influxdb:
+  #   image: influxdb
+  #   container_name: influx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "5086:8086"
+   # credentials?
+
+volumes:
+  mosquitto_data:
+  # mosquitto_config:

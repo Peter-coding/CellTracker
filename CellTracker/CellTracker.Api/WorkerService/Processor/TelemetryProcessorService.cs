@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Ingestion.Distributor;
 using CellTracker.Api.Ingestion.Queue;
+using CellTracker.Api.Services.TelemetryRepository;
 using CellTracker.Api.WorkerService.Validator;
 
 namespace CellTracker.Api.WorkerService.Processor
@@ -9,17 +10,20 @@ namespace CellTracker.Api.WorkerService.Processor
         private readonly IRedisQueueService _redisQueueService;
         private readonly ITelemetryValidatorService _telemetryValidatorService;
         private readonly ITelemetryDistributorService _telemetryDistributorService;
+        private readonly ITelemetryRepository _telemetryRepository;
 
         static int _incomingMessages = 0;
         static int _processedCount = 0;
         public TelemetryProcessorService(
             IRedisQueueService redisQueueService,
             ITelemetryValidatorService telemetryValidatorService,
-            ITelemetryDistributorService telemetryDistributorService)
+            ITelemetryDistributorService telemetryDistributorService,
+            ITelemetryRepository telemetryRepository)
         {
             _redisQueueService = redisQueueService;
             _telemetryValidatorService = telemetryValidatorService;
             _telemetryDistributorService = telemetryDistributorService;
+            _telemetryRepository = telemetryRepository;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -38,6 +42,8 @@ namespace CellTracker.Api.WorkerService.Processor
                 try
                 {
                     var telemetryData = await _redisQueueService.DequeueAsync(stoppingToken);
+
+                    _telemetryRepository.SaveTelemetryAsync(telemetryData);
 
                     if (telemetryData == null)
                     {

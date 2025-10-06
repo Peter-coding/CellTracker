@@ -19,6 +19,10 @@ services:
       - JWT__AUDIENCE=celltracker.app
       - JWT__EXPIRATIONINMINUTES=30
       - JWT__REFRESHTOKENEXPIRATIONDAYS=7
+      - INFLUXDB_TOKEN=my-super-token
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_ORG=CellTracker
+      - INFLUXDB_BUCKET=CellTracker
     ports:
       - 5000:8080
       - 5001:8081
@@ -73,14 +77,29 @@ services:
     # command: ["redis-server", "--appendonly", "yes"]
     restart: unless-stopped
 
-  # influxdb:
-  #   image: influxdb
-  #   container_name: influx
-  #   restart: unless-stopped
-  #   ports:
-  #     - "5086:8086"
-   # credentials?
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=testusername
+      - DOCKER_INFLUXDB_INIT_PASSWORD=testpassword
+      - DOCKER_INFLUXDB_INIT_ORG=CellTracker
+      - DOCKER_INFLUXDB_INIT_BUCKET=CellTracker
+     # - DOCKER_INFLUXDB_INIT_RETENTION=1w #here we can define how long the data should be stored
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-token  #needed to acces from c# code
+    volumes:
+      - type: volume
+        source: influxdb2-data
+        target: /var/lib/influxdb2
+      - type: volume
+        source: influxdb2-config
+        target: /etc/influxdb2
 
 volumes:
+  influxdb2-data:
+  influxdb2-config:
   mosquitto_data:
   # mosquitto_config:

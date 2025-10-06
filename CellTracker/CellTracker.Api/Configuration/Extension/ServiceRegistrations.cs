@@ -3,6 +3,7 @@ using CellTracker.Api.Data;
 using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.Operator;
+using CellTracker.Api.Services.TelemetryRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Configuration.Extension
@@ -24,6 +25,9 @@ namespace CellTracker.Api.Configuration.Extension
 
             // Add UnitOfWork pattern
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Add TelemetryReposiroty
+            services.AddScoped<ITelemetryRepository, TelemetryRepository>();
 
 
             return services;

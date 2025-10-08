@@ -7,6 +7,9 @@ using CellTracker.Api.Services.TestMqtt;
 using CellTracker.Api.WorkerService.Ingestion;
 using CellTracker.Api.WorkerService.Processor;
 using CellTracker.Api.WorkerService.Validator;
+using CellTracker.Api.Configuration.Redis;
+using CellTracker.Api.Configuration.MqttClient;
+using CellTracker.Api.Services.TelemetryRepository;
 
 
 namespace CellTracker.MqttIngestion.Configuration.Extension
@@ -28,6 +31,8 @@ namespace CellTracker.MqttIngestion.Configuration.Extension
 
             // Add Mqtt Options to set up Mqtt client
             services.AddMqttClientOptions(configuration);
+
+            services.AddScoped<ITelemetryRepository, TelemetryRepository>();
 
             // Add Hosted Services
             services.RegisterHostedServicesExtension();

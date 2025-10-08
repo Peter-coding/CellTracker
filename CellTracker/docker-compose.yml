@@ -42,6 +42,11 @@ services:
       - DB_NAME=Tracker
       - DB_USER=test
       - DB_PASSWORD=test
+      - INFLUXDB_TOKEN=my-super-token
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_ORG=CellTracker
+      - INFLUXDB_BUCKET=CellTracker
+
     depends_on:
       - appdb
       - mosquitto

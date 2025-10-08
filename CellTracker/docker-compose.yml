@@ -12,10 +12,7 @@ services:
       - DB_PASSWORD=test
       - MQTT_BROKER_HOST=mosquitto
       - MQTT_BROKER_PORT=1883
-      - INFLUXDB_TOKEN=my-super-token
-      - INFLUXDB_URL=http://influxdb:8086
-      - INFLUXDB_ORG=CellTracker
-      - INFLUXDB_BUCKET=CellTracker
+
     ports:
       - 5000:8080
       - 5001:8081
@@ -35,6 +32,11 @@ services:
       - DB_NAME=Tracker
       - DB_USER=test
       - DB_PASSWORD=test
+      - INFLUXDB_TOKEN=my-super-token
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_ORG=CellTracker
+      - INFLUXDB_BUCKET=CellTracker
+
     depends_on:
       - appdb
       - mosquitto

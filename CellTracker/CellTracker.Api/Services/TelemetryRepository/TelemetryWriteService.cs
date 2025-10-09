@@ -7,18 +7,13 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CellTracker.Api.Services.TelemetryRepository
 {
-    public class TelemetryRepository : ITelemetryRepository
+    public class TelemetryWriteService : ITelemetryWriteService
     {
         private readonly InfluxDBClient _influxDBClient;
-        public TelemetryRepository()
+        public TelemetryWriteService()
         {
             var connectionString = ConnectionConfiguration.GetInfluxDbConnectionString();
             _influxDBClient = new InfluxDBClient(connectionString);
-        }
-
-        public Task<List<TelemetryData>> GetTelemetryAsync(string query)
-        {
-            return _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
         }
 
         public async void SaveTelemetryAsync(TelemetryData telemetryData)

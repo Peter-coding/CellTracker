@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Services.Operator;
+using CellTracker.Api.Services.TelemetryRepository;
 
 namespace CellTracker.Api.Endpoint
 {

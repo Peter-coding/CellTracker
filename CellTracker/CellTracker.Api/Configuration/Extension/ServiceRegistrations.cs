@@ -26,9 +26,10 @@ namespace CellTracker.Api.Configuration.Extension
             // Add UnitOfWork pattern
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Add TelemetryReposiroty
-            services.AddScoped<ITelemetryRepository, TelemetryRepository>();
+            // Add TelemetryWriteService
+            services.AddScoped<ITelemetryWriteService, TelemetryWriteService>();
 
+            services.AddScoped<ITelemetryFetchService, TelemetryFetchService>();
 
             return services;
         }

@@ -2,9 +2,8 @@
 
 namespace CellTracker.Api.Services.TelemetryRepository
 {
-    public interface ITelemetryRepository
+    public interface ITelemetryWriteService
     {
         public void SaveTelemetryAsync(TelemetryData telemetryData);
-        public Task<List<TelemetryData>> GetTelemetryAsync(string query);
     }
 }

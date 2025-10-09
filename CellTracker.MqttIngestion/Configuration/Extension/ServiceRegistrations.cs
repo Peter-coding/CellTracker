@@ -32,7 +32,7 @@ namespace CellTracker.MqttIngestion.Configuration.Extension
             // Add Mqtt Options to set up Mqtt client
             services.AddMqttClientOptions(configuration);
 
-            services.AddScoped<ITelemetryRepository, TelemetryRepository>();
+            services.AddScoped<ITelemetryWriteService, TelemetryWriteService>();
 
             // Add Hosted Services
             services.RegisterHostedServicesExtension();

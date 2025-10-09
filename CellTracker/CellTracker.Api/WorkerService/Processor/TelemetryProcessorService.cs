@@ -43,7 +43,7 @@ namespace CellTracker.Api.WorkerService.Processor
                 {
                     var telemetryData = await _redisQueueService.DequeueAsync(stoppingToken);
 
-                    _telemetryRepository.SaveTelemetryAsync(telemetryData);
+                    _telemetryWriteService.SaveTelemetryAsync(telemetryData);
 
                     if (telemetryData == null)
                     {

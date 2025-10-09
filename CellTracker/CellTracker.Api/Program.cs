@@ -44,6 +44,7 @@ namespace CellTracker.Api
 
             app.MapOperatorEndpoint("operator");
             app.MapAuthEndpoint("Auth");
+            app.MapTelemetryEndpoint("telemetry");
 
             app.Run();
         }

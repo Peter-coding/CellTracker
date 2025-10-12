@@ -12,6 +12,11 @@ services:
       - DB_PASSWORD=test
       - MQTT_BROKER_HOST=mosquitto
       - MQTT_BROKER_PORT=1883
+      - JWT__KEY=your-secret-key-here-that-should-also-be-fairly-long
+      - JWT__ISSUER=celltracker.api
+      - JWT__AUDIENCE=celltracker.app
+      - JWT__EXPIRATIONINMINUTES=30
+      - JWT__REFRESHTOKENEXPIRATIONDAYS=7
     ports:
       - 5000:8080
       - 5001:8081

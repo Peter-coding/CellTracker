@@ -13,5 +13,7 @@ namespace CellTracker.Api.Auth
         [StringLength(75)]
         [Required]
         public string LastName { get; set; }
+
+        public string? LoginCode { get; set; }
     }
 }

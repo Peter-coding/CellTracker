@@ -9,9 +9,11 @@ namespace CellTracker.Api.Configuration.Extension
         {
             using IServiceScope scope = app.ApplicationServices.CreateScope();
 
-            using AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            using AppDbContext appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            using AppIdentityDbContext appIdentityDbContext = scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
 
-            dbContext.Database.Migrate();
+            appDbContext.Database.Migrate();
+            appIdentityDbContext.Database.Migrate();
         }
     }
 }

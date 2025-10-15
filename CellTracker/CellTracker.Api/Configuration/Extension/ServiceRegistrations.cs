@@ -1,42 +1,31 @@
-﻿using CellTracker.Api.Configuration.ExternalConnection;
-using CellTracker.Api.Data;
-using CellTracker.Api.Models.OperatorTask;
+﻿using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.Operator;
-using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Configuration.Extension
 {
     public static class ServiceRegistrations
     {
-        public static IServiceCollection RegisterServicesExtension(
-            this IServiceCollection services,
+        public static WebApplicationBuilder RegisterServicesExtension(
+            this WebApplicationBuilder builder,
             IConfiguration configuration)
         {
             // DbContext Registration
-            services.RegisterDbContextExtension();
+            builder.Services.RegisterDbContextExtension();
+
+            builder.AddAuthenticationServices();
 
             //Add more Repositories later to inject it into UnitOfWork
-            services.AddScoped<IRepository<OperatorTask>, OperatorTaskRepository>();
+            builder.Services.AddScoped<IRepository<OperatorTask>, OperatorTaskRepository>();
 
             // Add service
-            services.AddScoped<IOperatorService, OperatorService>();
+            builder.Services.AddScoped<IOperatorService, OperatorService>();
 
             // Add UnitOfWork pattern
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
-            return services;
-        }
-
-        private static IServiceCollection RegisterDbContextExtension(
-            this IServiceCollection services)
-        {
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(ConnectionConfiguration.GetConnectionString())
-                .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning))
-            );
-            return services;
+            return builder;
         }
     }
 }

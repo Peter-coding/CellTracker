@@ -9,21 +9,51 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CellTracker.Api.Migrations
+namespace CellTracker.Api.Migrations.Identity
 {
-    [DbContext(typeof(AppDbContext))]
-    [Migration("20250925213426_IdToGuid")]
-    partial class IdToGuid
+    [DbContext(typeof(AppIdentityDbContext))]
+    [Migration("20251012143217_addRefreshToken")]
+    partial class addRefreshToken
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("identity")
                 .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("CellTracker.Api.Auth.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", "identity");
+                });
 
             modelBuilder.Entity("CellTracker.Api.Auth.SiteUser", b =>
                 {
@@ -59,6 +89,9 @@ namespace CellTracker.Api.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LoginCode")
+                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -96,14 +129,14 @@ namespace CellTracker.Api.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers", "identity");
 
                     b.HasData(
                         new
                         {
-                            Id = "d2f15dba-417f-4e90-a562-4a0379e73747",
+                            Id = "ee6739f0-97e2-496c-8ffe-74a39ae7a8e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5222856a-b515-49c4-ab27-0623d0d8b57f",
+                            ConcurrencyStamp = "3934e15f-df75-4034-b754-0a586140c2da",
                             Email = "test.user@example.com",
                             EmailConfirmed = true,
                             FirstName = "Test",
@@ -111,17 +144,17 @@ namespace CellTracker.Api.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST.USER@EXAMPLE.COM",
                             NormalizedUserName = "TESTUSER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJU27NECS//s8tmUbbHfvb2U5H4qRaFCh0rpVTLSjugT8bGTjwcU0ST9/NpwtAFz6w==",
+                            PasswordHash = "1111111",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "973f9f6f-7b94-4f09-a186-c05bfc042649",
+                            SecurityStamp = "ee6739f0-97e2-496c-8ffe-74a39ae7a8e4",
                             TwoFactorEnabled = false,
                             UserName = "testuser"
                         },
                         new
                         {
-                            Id = "b6f2813a-ef0b-4737-b08b-c9f65c0b2700",
+                            Id = "35031d70-8287-4bfe-bd63-05a816f44885",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4cdab63c-620b-4b92-9147-89fa2e5497fc",
+                            ConcurrencyStamp = "228524b1-3286-46c1-b57b-ea9cccb0583b",
                             Email = "test.user1@example.com",
                             EmailConfirmed = true,
                             FirstName = "Test1",
@@ -129,54 +162,11 @@ namespace CellTracker.Api.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST.USER1@EXAMPLE.COM",
                             NormalizedUserName = "TESTUSER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAED4cCbmK3dyyVNtiDKWvYOW9ncThp51O4NFA3TK4Vn2QvubIqTSFM1IQF9F+cMYWpQ==",
+                            PasswordHash = "0000000",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "eea3b104-a74f-4f64-b9ee-80c68273b404",
+                            SecurityStamp = "35031d70-8287-4bfe-bd63-05a816f44880",
                             TwoFactorEnabled = false,
                             UserName = "testuser1"
-                        });
-                });
-
-            modelBuilder.Entity("CellTracker.Api.Models.OperatorTask.OperatorTask", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("QuantityGoal")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OperatorTasks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("03efcf35-2691-4620-9a0d-21c7a213f94f"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Sample operator task",
-                            Name = "Test Task",
-                            QuantityGoal = 10
-                        },
-                        new
-                        {
-                            Id = new Guid("5ca9488f-69ba-4e16-9d95-d4539c3667df"),
-                            CreatedAt = new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Sample operator task2",
-                            Name = "Test Task2",
-                            QuantityGoal = 15
                         });
                 });
 
@@ -203,7 +193,7 @@ namespace CellTracker.Api.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("AspNetRoles", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -228,7 +218,7 @@ namespace CellTracker.Api.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("AspNetRoleClaims", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -253,7 +243,7 @@ namespace CellTracker.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("AspNetUserClaims", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -275,7 +265,7 @@ namespace CellTracker.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserLogins", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -290,7 +280,7 @@ namespace CellTracker.Api.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -309,7 +299,18 @@ namespace CellTracker.Api.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", "identity");
+                });
+
+            modelBuilder.Entity("CellTracker.Api.Auth.RefreshToken", b =>
+                {
+                    b.HasOne("CellTracker.Api.Auth.SiteUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

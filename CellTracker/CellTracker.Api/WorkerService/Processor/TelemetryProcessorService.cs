@@ -1,4 +1,5 @@
-﻿using CellTracker.Api.Ingestion.Queue;
+﻿using CellTracker.Api.Ingestion.Distributor;
+using CellTracker.Api.Ingestion.Queue;
 using CellTracker.Api.WorkerService.Validator;
 
 namespace CellTracker.Api.WorkerService.Processor
@@ -7,15 +8,18 @@ namespace CellTracker.Api.WorkerService.Processor
     {
         private readonly IRedisQueueService _redisQueueService;
         private readonly ITelemetryValidatorService _telemetryValidatorService;
+        private readonly ITelemetryDistributorService _telemetryDistributorService;
 
         static int _incomingMessages = 0;
         static int _processedCount = 0;
         public TelemetryProcessorService(
             IRedisQueueService redisQueueService,
-            ITelemetryValidatorService telemetryValidatorService)
+            ITelemetryValidatorService telemetryValidatorService,
+            ITelemetryDistributorService telemetryDistributorService)
         {
             _redisQueueService = redisQueueService;
             _telemetryValidatorService = telemetryValidatorService;
+            _telemetryDistributorService = telemetryDistributorService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,9 +47,12 @@ namespace CellTracker.Api.WorkerService.Processor
 
                     if (!await _telemetryValidatorService.ValidateAsync(telemetryData))
                     {
-                        // Todo validation handling
+                        // Todo: handling invalid messages
                         continue;
                     }
+
+                    // The item is valid, send to client
+                    await _telemetryDistributorService.SendGroupAsync(telemetryData.WorkStationId, "Message", telemetryData);
 
                     Interlocked.Increment(ref _incomingMessages);
                 }
@@ -64,7 +71,7 @@ namespace CellTracker.Api.WorkerService.Processor
                 Console.WriteLine($"Currently processed messages: {_incomingMessages - _processedCount} - All incoming messages: {_incomingMessages}");
                 _processedCount = _incomingMessages;
 
-                await Task.Delay(500, stoppingToken);
+                await Task.Delay(3000, stoppingToken);
             }
         }
     }

@@ -1,6 +1,7 @@
 using CellTracker.Api.Configuration.Extension;
 using CellTracker.Api.Endpoint;
 using CellTracker.Api.Endpoints;
+using CellTracker.Api.Services.SignalR;
 using System.Threading.Tasks;
 
 namespace CellTracker.Api
@@ -38,6 +39,8 @@ namespace CellTracker.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapHub<SignalRHub>("/hub");
 
             app.MapOperatorEndpoint("operator");
             app.MapAuthEndpoint("Auth");

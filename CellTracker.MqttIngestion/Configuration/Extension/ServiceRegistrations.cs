@@ -1,10 +1,12 @@
-﻿using CellTracker.Api.Ingestion.Queue;
+﻿using CellTracker.Api.Configuration.MqttClient;
+using CellTracker.Api.Configuration.Redis;
+using CellTracker.Api.Infrastructure.UserIdentiy;
+using CellTracker.Api.Ingestion.Distributor;
+using CellTracker.Api.Ingestion.Queue;
 using CellTracker.Api.Services.TestMqtt;
 using CellTracker.Api.WorkerService.Ingestion;
 using CellTracker.Api.WorkerService.Processor;
 using CellTracker.Api.WorkerService.Validator;
-using CellTracker.Api.Configuration.Redis;
-using CellTracker.Api.Configuration.MqttClient;
 
 
 namespace CellTracker.MqttIngestion.Configuration.Extension
@@ -15,6 +17,8 @@ namespace CellTracker.MqttIngestion.Configuration.Extension
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            services.AddSingleton<ITelemetryDistributorService, TelemetryDistributorService>();
+
             // Add validator service
             services.AddSingleton<ITelemetryValidatorService, TelemetryValidatorService>();
 
@@ -27,6 +31,8 @@ namespace CellTracker.MqttIngestion.Configuration.Extension
 
             // Add Hosted Services
             services.RegisterHostedServicesExtension();
+
+            services.AddSignalR();
 
             return services;
         }

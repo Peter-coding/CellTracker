@@ -17,6 +17,7 @@ namespace CellTracker.Api.Configuration.Extension
                 lc.WriteTo.PostgreSQL(
                         connectionString: ConnectionConfiguration.GetConnectionString(),
                         tableName: "Logs",
+                        schemaName: "cell_tracker",
                         needAutoCreateTable: true,
                         columnOptions: GetColumnOptions())
                     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)

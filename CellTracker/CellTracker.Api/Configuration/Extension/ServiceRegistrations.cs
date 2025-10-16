@@ -1,4 +1,6 @@
-﻿using CellTracker.Api.Models.OperatorTask;
+﻿using CellTracker.Api.Infrastructure.Logging;
+using CellTracker.Api.Infrastructure.UserIdentiy;
+using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.Operator;
 
@@ -10,9 +12,20 @@ namespace CellTracker.Api.Configuration.Extension
             this WebApplicationBuilder builder,
             IConfiguration configuration)
         {
+            // Adding Logging
+            builder.Logging.ClearProviders();
+            builder.Services.AddConfigureSerilog();
+
+            // Get current user from request
+            builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+            // Create logging service
+            builder.Services.AddSingleton<ILoggingService, LoggingService>();
+
             // DbContext Registration
             builder.Services.RegisterDbContextExtension();
 
+            // Add Auth
             builder.AddAuthenticationServices();
 
             //Add more Repositories later to inject it into UnitOfWork
@@ -24,6 +37,8 @@ namespace CellTracker.Api.Configuration.Extension
             // Add UnitOfWork pattern
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            // Add SignalR
+            builder.Services.AddSignalR();
 
             return builder;
         }

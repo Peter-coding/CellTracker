@@ -1,3 +1,5 @@
+name: CellTracker
+
 services:
   celltracker.api:
     image: ${DOCKER_REGISTRY-}celltrackerapi

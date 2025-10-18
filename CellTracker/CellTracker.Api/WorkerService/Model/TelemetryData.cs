@@ -1,5 +1,8 @@
-﻿namespace CellTracker.Api.Ingestion.Model
+﻿using InfluxDB.Client.Core;
+
+namespace CellTracker.Api.Ingestion.Model
 {
+    [Measurement("Telemetry")]
     public class TelemetryData
     {
         [Column("TelemetryId", IsTag = true)]

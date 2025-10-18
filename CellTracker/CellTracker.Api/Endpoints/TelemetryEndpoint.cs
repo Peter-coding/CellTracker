@@ -3,7 +3,7 @@ using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Services.Operator;
 using CellTracker.Api.Services.TelemetryRepository;
 
-namespace CellTracker.Api.Endpoint
+namespace CellTracker.Api.Endpoints
 {
     public static class TelemetryEndpoint
     {
@@ -15,7 +15,7 @@ namespace CellTracker.Api.Endpoint
         }
         public async static Task<IResult> GetTelemetryData(ITelemetryFetchService telemetryFetchService, DateTime from, DateTime to)
         {
-            if(from > to)
+            if (from > to)
             {
                 var tmp = to;
                 to = from;

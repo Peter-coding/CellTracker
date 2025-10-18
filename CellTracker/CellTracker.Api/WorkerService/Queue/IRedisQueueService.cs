@@ -6,5 +6,7 @@ namespace CellTracker.Api.Ingestion.Queue
     {
         Task EnqueueAsync(TelemetryData data, CancellationToken ct);
         Task<TelemetryData> DequeueAsync(CancellationToken ct);
+        Task EnqueValidatedAsync(TelemetryData data, CancellationToken ct);
+        Task<TelemetryData> DequeueValidatedAsync(CancellationToken ct);
     }
 }

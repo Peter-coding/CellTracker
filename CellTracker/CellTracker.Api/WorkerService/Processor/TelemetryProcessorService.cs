@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Ingestion.Distributor;
 using CellTracker.Api.Ingestion.Queue;
+using CellTracker.Api.Services.TelemetryRepository;
 using CellTracker.Api.WorkerService.Validator;
 
 namespace CellTracker.Api.WorkerService.Processor
@@ -9,17 +10,22 @@ namespace CellTracker.Api.WorkerService.Processor
         private readonly IRedisQueueService _redisQueueService;
         private readonly ITelemetryValidatorService _telemetryValidatorService;
         private readonly ITelemetryDistributorService _telemetryDistributorService;
+        private readonly ITelemetryWriteService _telemetryWriteService;
+        private readonly PeriodicTimer _timer;
 
         static int _incomingMessages = 0;
         static int _processedCount = 0;
         public TelemetryProcessorService(
             IRedisQueueService redisQueueService,
             ITelemetryValidatorService telemetryValidatorService,
-            ITelemetryDistributorService telemetryDistributorService)
+            ITelemetryDistributorService telemetryDistributorService,
+            ITelemetryWriteService telemetryWriteService)
         {
             _redisQueueService = redisQueueService;
             _telemetryValidatorService = telemetryValidatorService;
             _telemetryDistributorService = telemetryDistributorService;
+            _telemetryWriteService = telemetryWriteService;
+            _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -33,12 +39,17 @@ namespace CellTracker.Api.WorkerService.Processor
 
         protected async Task ProcessQueueAsync(CancellationToken stoppingToken)
         {
+            //TODO: Delete later. Just for testing purposes, not to have so many entries.
+            _telemetryWriteService.DeleteAllTelemetryData();
+
+            SaveTelemetryDataPeriodicAsync(stoppingToken);
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     var telemetryData = await _redisQueueService.DequeueAsync(stoppingToken);
-
+                    
                     if (telemetryData == null)
                     {
                         // There's no item in the queue, so continue
@@ -50,6 +61,8 @@ namespace CellTracker.Api.WorkerService.Processor
                         // Todo: handling invalid messages
                         continue;
                     }
+
+                    await _redisQueueService.EnqueValidatedAsync(telemetryData, stoppingToken);
 
                     // The item is valid, send to client
                     await _telemetryDistributorService.SendGroupAsync(telemetryData.WorkStationId, "Message", telemetryData);
@@ -72,6 +85,14 @@ namespace CellTracker.Api.WorkerService.Processor
                 _processedCount = _incomingMessages;
 
                 await Task.Delay(3000, stoppingToken);
+            }
+        }
+
+        private async void SaveTelemetryDataPeriodicAsync(CancellationToken stoppingToken)
+        {
+            while (await _timer.WaitForNextTickAsync())
+            {                
+                _telemetryWriteService.SaveTelemetryBatchAsync(stoppingToken);
             }
         }
     }

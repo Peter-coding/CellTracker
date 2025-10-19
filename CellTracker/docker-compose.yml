@@ -26,6 +26,8 @@ services:
       - appdb
       - celltracker.worker
       - mosquitto
+    networks:
+      - cellnet
 
   celltracker.worker:
     image: ${DOCKER_REGISTRY-}celltrackerworker
@@ -42,6 +44,8 @@ services:
       - appdb
       - mosquitto
       - redis
+    networks:
+      - cellnet
 
   mosquitto:
     image: eclipse-mosquitto
@@ -52,6 +56,8 @@ services:
     volumes:
       - ./CellTracker.Api/Configuration/Mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - mosquitto_data:/mosquitto/data
+    networks:
+      - cellnet
   
   appdb:
     image: postgres:latest
@@ -62,6 +68,8 @@ services:
       - POSTGRES_PASSWORD=test
     ports:
       - 5432:5432
+    networks:
+      - cellnet
   
   redis:
     image: redis:7.4-alpine
@@ -72,6 +80,8 @@ services:
     #   - redis_data:/data
     # command: ["redis-server", "--appendonly", "yes"]
     restart: unless-stopped
+    networks:
+      - cellnet
 
   # influxdb:
   #   image: influxdb
@@ -84,3 +94,8 @@ services:
 volumes:
   mosquitto_data:
   # mosquitto_config:
+networks:
+  cellnet:
+    name: cellnet
+    driver: bridge
+    external: true

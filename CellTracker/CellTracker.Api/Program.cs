@@ -17,6 +17,7 @@ namespace CellTracker.Api
             builder.RegisterServicesExtension(builder.Configuration);
             
             builder.Services.AddSignalR();
+            builder.Services.AddCors();
 
             builder.Services.AddOpenApi();
 
@@ -44,6 +45,12 @@ namespace CellTracker.Api
 
             app.MapOperatorEndpoint("operator");
             app.MapAuthEndpoint("Auth");
+
+            app.UseCors(x => x
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .WithOrigins("http://localhost:4300"));
 
             app.Run();
         }

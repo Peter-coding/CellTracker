@@ -1,8 +1,11 @@
-﻿using CellTracker.Api.Infrastructure.Logging;
+﻿using CellTracker.Api.ExceptionHandler;
+using CellTracker.Api.Infrastructure.Logging;
 using CellTracker.Api.Infrastructure.UserIdentiy;
 using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.Operator;
+using CellTracker.Api.Services.TelemetryRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Configuration.Extension
 {
@@ -15,6 +18,18 @@ namespace CellTracker.Api.Configuration.Extension
             // Adding Logging
             builder.Logging.ClearProviders();
             builder.Services.AddConfigureSerilog();
+
+            // Add GlobalExceptionHandler
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+            //Add ProblemDetails middleware with requestId extension (can be reached in GlobalExceptionHandler)
+            builder.Services.AddProblemDetails(configure =>
+            {
+                configure.CustomizeProblemDetails = context =>
+                {
+                    context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+                };
+            });
 
             // Get current user from request
             builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
@@ -36,6 +51,8 @@ namespace CellTracker.Api.Configuration.Extension
 
             // Add UnitOfWork pattern
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddScoped<ITelemetryFetchService, TelemetryFetchService>();
 
             // Add SignalR
             builder.Services.AddSignalR();

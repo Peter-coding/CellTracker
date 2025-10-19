@@ -1,18 +1,18 @@
 using CellTracker.Api.Configuration.Extension;
 using CellTracker.Api.Endpoint;
 using CellTracker.Api.Endpoints;
-using CellTracker.Api.Services.SignalR;
-using System.Threading.Tasks;
+using CellTracker.Api.ExceptionHandler;
 
 namespace CellTracker.Api
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddAuthorization();
 
             builder.RegisterServicesExtension(builder.Configuration);
             
@@ -32,18 +32,16 @@ namespace CellTracker.Api
                     options.SwaggerEndpoint("/openapi/v1.json", "Tracker Api");
                 });
                 app.ApplyMigrations();
-
-                await app.SeedInitialDataAsync();
             }
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseAuthorization();   
 
-            app.MapHub<SignalRHub>("/hub");
+            //Turning on for our own GlobalExceptionHandler
+            app.UseExceptionHandler();
 
             app.MapOperatorEndpoint("operator");
-            app.MapAuthEndpoint("Auth");
+            app.MapTelemetryEndpoint("telemetry");
 
             app.Run();
         }

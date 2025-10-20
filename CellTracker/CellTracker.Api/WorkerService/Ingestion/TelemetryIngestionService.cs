@@ -1,4 +1,5 @@
-﻿using CellTracker.Api.Ingestion.Model;
+﻿using CellTracker.Api.Configuration.Redis;
+using CellTracker.Api.Ingestion.Model;
 using CellTracker.Api.Ingestion.Queue;
 using MQTTnet;
 using MQTTnet.Server;
@@ -13,6 +14,8 @@ namespace CellTracker.Api.WorkerService.Ingestion
         private readonly IMqttClient _mqttClient;
         private readonly MqttClientOptions _options;
 
+        private readonly string _rawQueueKey;
+
         public TelemetryIngestionService(
             ILogger<TelemetryIngestionService> logger,
             IRedisQueueService queue,
@@ -24,6 +27,8 @@ namespace CellTracker.Api.WorkerService.Ingestion
             _queue = queue;
             _mqttClient = mqttClient;
             _options = options;
+
+            _rawQueueKey = RedisExtension.GetRawQueueKey();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,7 +48,7 @@ namespace CellTracker.Api.WorkerService.Ingestion
                 };
 
                 // Add message to queue
-                await _queue.EnqueueAsync(telemetry, stoppingToken);
+                await _queue.EnqueueAsync(_rawQueueKey, telemetry, stoppingToken);
             };
 
             await _mqttClient.ConnectAsync(_options, CancellationToken.None);

@@ -1,10 +1,9 @@
 ﻿using CellTracker.Api.Configuration.ExternalConnection;
+using CellTracker.Api.Configuration.Redis;
 using CellTracker.Api.Ingestion.Model;
 using CellTracker.Api.Ingestion.Queue;
 using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
-using InfluxDB.Client.Writes;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CellTracker.Api.Services.TelemetryRepository
 {
@@ -13,11 +12,15 @@ namespace CellTracker.Api.Services.TelemetryRepository
         private readonly InfluxDBClient _influxDBClient;
         private readonly IRedisQueueService _redisQueueService;
 
+        private readonly string _validatedQueueKey;
+
         public TelemetryWriteService(IRedisQueueService redisQueueService)
         {
             var connectionString = ConnectionConfiguration.GetInfluxDbConnectionString();
             _influxDBClient = new InfluxDBClient(connectionString);
             _redisQueueService = redisQueueService;
+
+            _validatedQueueKey = RedisExtension.GetValidatedQueueKey();
         }
 
         public async void SaveTelemetryAsync(TelemetryData telemetryData)
@@ -32,7 +35,7 @@ namespace CellTracker.Api.Services.TelemetryRepository
       
             while (true)
             {
-                var data = await _redisQueueService.DequeueValidatedAsync(cancellationToken);
+                var data = await _redisQueueService.DequeueAsync(_validatedQueueKey, cancellationToken);
                 if (data == null) break;
                 validatedTelemetryData.Add(data);
             }

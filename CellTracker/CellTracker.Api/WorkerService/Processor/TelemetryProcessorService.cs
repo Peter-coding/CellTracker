@@ -1,4 +1,5 @@
-﻿using CellTracker.Api.Ingestion.Distributor;
+﻿using CellTracker.Api.Configuration.Redis;
+using CellTracker.Api.Infrastructure.Distributor;
 using CellTracker.Api.Ingestion.Queue;
 using CellTracker.Api.Services.TelemetryRepository;
 using CellTracker.Api.WorkerService.Validator;
@@ -9,22 +10,29 @@ namespace CellTracker.Api.WorkerService.Processor
     {
         private readonly IRedisQueueService _redisQueueService;
         private readonly ITelemetryValidatorService _telemetryValidatorService;
-        private readonly ITelemetryDistributorService _telemetryDistributorService;
         private readonly ITelemetryWriteService _telemetryWriteService;
         private readonly PeriodicTimer _timer;
 
         static int _incomingMessages = 0;
         static int _processedCount = 0;
+
+        private readonly string _rawQueueKey;
+        private readonly string _validatedQueueKey;
+        private readonly string _distributionQueueKey;
+
         public TelemetryProcessorService(
             IRedisQueueService redisQueueService,
             ITelemetryValidatorService telemetryValidatorService,
-            ITelemetryDistributorService telemetryDistributorService,
             ITelemetryWriteService telemetryWriteService)
         {
             _redisQueueService = redisQueueService;
             _telemetryValidatorService = telemetryValidatorService;
-            _telemetryDistributorService = telemetryDistributorService;
             _telemetryWriteService = telemetryWriteService;
+
+            _rawQueueKey = RedisExtension.GetRawQueueKey();
+            _validatedQueueKey = RedisExtension.GetValidatedQueueKey();
+            _distributionQueueKey = RedisExtension.GetDistributionQueueKey();
+
             _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
         }
 
@@ -48,7 +56,7 @@ namespace CellTracker.Api.WorkerService.Processor
             {
                 try
                 {
-                    var telemetryData = await _redisQueueService.DequeueAsync(stoppingToken);
+                    var telemetryData = await _redisQueueService.DequeueAsync(_rawQueueKey, stoppingToken);
                     
                     if (telemetryData == null)
                     {
@@ -62,10 +70,13 @@ namespace CellTracker.Api.WorkerService.Processor
                         continue;
                     }
 
-                    await _redisQueueService.EnqueValidatedAsync(telemetryData, stoppingToken);
+                    await _redisQueueService.EnqueueAsync(_validatedQueueKey,telemetryData, stoppingToken);
+                    await _redisQueueService.EnqueueAsync(_distributionQueueKey,telemetryData, stoppingToken);
 
                     // The item is valid, send to client
-                    await _telemetryDistributorService.SendGroupAsync(telemetryData.WorkStationId, "Message", telemetryData);
+                    //await _telemetryDistributorService.SendGroupAsync(telemetryData.WorkStationId, "Message", telemetryData);
+                    //await _telemetryDistributorService.SendGroupAsync("loginGroup", "Message", telemetryData);
+                    //await _telemetryDistributorService.SendObjectAsync("Message", telemetryData);
 
                     Interlocked.Increment(ref _incomingMessages);
                 }

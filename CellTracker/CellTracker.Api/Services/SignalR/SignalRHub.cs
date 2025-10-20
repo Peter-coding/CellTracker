@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 namespace CellTracker.Api.Services.SignalR
 {
     //TODO: Discuss what name this class and Folder should have
-    public class SignalRHub : Hub
+    public sealed class SignalRHub : Hub
     {
         private static int _conns = 0;
 

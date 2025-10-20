@@ -1,4 +1,4 @@
-﻿namespace CellTracker.Api.Ingestion.Distributor
+﻿namespace CellTracker.Api.Infrastructure.Distributor
 {
     public interface ITelemetryDistributorService
     {

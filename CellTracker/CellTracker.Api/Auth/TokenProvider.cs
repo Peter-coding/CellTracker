@@ -27,7 +27,7 @@ namespace CellTracker.Api.Auth
             [
                 new(JwtRegisteredClaimNames.Sub, tokenRequest.UserId),
                 new(JwtRegisteredClaimNames.Email, tokenRequest.Email),
-                //..tokenRequest.Roles.Select(role => new Claim(ClaimTypes.Role, role))
+                ..tokenRequest.Roles.Select(role => new Claim(ClaimTypes.Role, role))
             ];
 
             var tokenDescriptor = new SecurityTokenDescriptor

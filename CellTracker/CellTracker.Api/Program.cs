@@ -41,7 +41,7 @@ namespace CellTracker.Api
 
             app.MapHub<SignalRHub>("/hub");
 
-            app.MapAuthEndpoint("Auth");
+            app.MapAuthEndpoint("Authentication");
             //Turning on for our own GlobalExceptionHandler
             app.UseExceptionHandler();
 

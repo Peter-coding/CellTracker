@@ -8,12 +8,14 @@ namespace CellTracker.Api.Endpoints
     {
         public static void MapAuthEndpoint(this IEndpointRouteBuilder app, string pathPrefix)
         {
-            app.MapPost("/Authentication/Login", Login);
+            var path = $"/{pathPrefix}";
+            
+            app.MapPost($"{path}/Login", Login);
             //app.MapPost("/Authentication/LoginWithCode", LoginWithCode);
-            app.MapPost("/Authentication/Register", Register);
-            app.MapPost("/Authentication/Refresh", Refresh);
+            app.MapPost($"{path}/Register", Register);
+            app.MapPost($"{path}/Refresh", Refresh);
             //app.MapGet("/Authentication/GetActiveUsers", GetActiveUsers);
-            app.MapGet("/Authentication/GetUsers", GetUsers);
+            app.MapGet($"{path}/GetUsers", GetUsers);
         }
 
         public static async Task<IResult> Register(

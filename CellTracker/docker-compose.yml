@@ -23,6 +23,7 @@ services:
       - INFLUXDB_URL=http://influxdb:8086
       - INFLUXDB_ORG=CellTracker
       - INFLUXDB_BUCKET=CellTracker
+      - DISTR_QK=telemetry:distribution_queue
     ports:
       - 5000:8080
       - 5001:8081
@@ -48,7 +49,9 @@ services:
       - INFLUXDB_URL=http://influxdb:8086
       - INFLUXDB_ORG=CellTracker
       - INFLUXDB_BUCKET=CellTracker
-
+      - RAW_QK=telemetry:raw_queue
+      - VALID_QK=telemetry:validated_queue
+      - DISTR_QK=telemetry:distribution_queue
     depends_on:
       - appdb
       - mosquitto
@@ -112,6 +115,8 @@ services:
       - type: volume
         source: influxdb2-config
         target: /etc/influxdb2
+    networks:
+      - cellnet
 
 volumes:
   influxdb2-data:

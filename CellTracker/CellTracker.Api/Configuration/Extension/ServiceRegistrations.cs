@@ -1,6 +1,9 @@
-﻿using CellTracker.Api.ExceptionHandler;
+﻿using CellTracker.Api.Configuration.Redis;
+using CellTracker.Api.ExceptionHandler;
+using CellTracker.Api.Infrastructure.Distributor;
 using CellTracker.Api.Infrastructure.Logging;
 using CellTracker.Api.Infrastructure.UserIdentiy;
+using CellTracker.Api.Ingestion.Queue;
 using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.Operator;
@@ -18,6 +21,10 @@ namespace CellTracker.Api.Configuration.Extension
             // Adding Logging
             builder.Logging.ClearProviders();
             builder.Services.AddConfigureSerilog();
+
+            // Add Redis
+            builder.Services.AddRedisOptions();
+            builder.Services.AddSingleton<IRedisQueueService, RedisQueueService>();
 
             // Add GlobalExceptionHandler
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -53,9 +60,11 @@ namespace CellTracker.Api.Configuration.Extension
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<ITelemetryFetchService, TelemetryFetchService>();
-
             // Add SignalR
             builder.Services.AddSignalR();
+            builder.Services.AddHostedService<TelemetryDistributorService>();
+
+
 
             return builder;
         }

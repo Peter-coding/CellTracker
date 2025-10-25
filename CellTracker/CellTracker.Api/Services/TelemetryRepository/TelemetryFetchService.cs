@@ -1,6 +1,9 @@
 ﻿using CellTracker.Api.Configuration.ExternalConnection;
 using CellTracker.Api.Ingestion.Model;
+using CellTracker.Api.Models;
 using InfluxDB.Client;
+using Microsoft.AspNetCore.Routing;
+using System.Runtime.Intrinsics.X86;
 
 namespace CellTracker.Api.Services.TelemetryRepository
 {
@@ -13,7 +16,7 @@ namespace CellTracker.Api.Services.TelemetryRepository
             _influxDBClient = new InfluxDBClient(connectionString);
         }
 
-         public Task<List<TelemetryData>> GetTelemetryAsync(DateTime from, DateTime to)
+        public async Task<List<TelemetryData>> GetTelemetryBetweenAsync(DateTime from, DateTime to)
         {
             var fromUtc = from.ToUniversalTime();
             var toUtc = to.ToUniversalTime();
@@ -25,7 +28,69 @@ namespace CellTracker.Api.Services.TelemetryRepository
                    |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
                  ";
 
-            return _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
+            return await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
+        }
+
+        public async Task<int> GetTelemetryDataCountInCurrentShiftAsync(string operatorId, string workStationId)
+        {
+            var currentTime = DateTime.UtcNow;
+            var currentHour = currentTime.Hour;
+            DateTime shiftStart;
+            if(currentHour >=6 && currentHour < 14)
+            {
+                shiftStart = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 6, 0, 0, DateTimeKind.Utc);
+            }
+            else if (currentHour >= 14 && currentHour < 22)
+            {
+                shiftStart = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 14, 0, 0, DateTimeKind.Utc);
+            }
+            else
+            {
+                var previousDay = currentTime.AddDays(-1);
+                shiftStart = new DateTime(currentTime.Year, currentTime.Month, previousDay.Day, 22, 0, 0, DateTimeKind.Utc);
+            }
+
+            string query = $@"
+                from(bucket: ""CellTracker"")
+                    |> range(start: {shiftStart:yyyy-MM-ddTHH:mm:ssZ}, stop: {currentTime:yyyy-MM-ddTHH:mm:ssZ})
+                    |> filter(fn: (r) => r._measurement == ""Telemetry"")
+                    |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
+                    |> filter(fn: (r) => r.OperatorId == ""{operatorId}"" and r.WorkStationId == ""{workStationId}"")
+                ";
+
+            var results = await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
+
+            return results.Count;
+        }
+
+        public async Task<List<TelemetryData>> GetTelemetryDataInCurrentShiftAsync(string operatorId, string workStationId)
+        {
+            var currentTime = DateTime.UtcNow;
+            var currentHour = currentTime.Hour;
+            DateTime shiftStart;
+            if (currentHour >= 6 && currentHour < 14)
+            {
+                shiftStart = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 6, 0, 0, DateTimeKind.Utc);
+            }
+            else if (currentHour >= 14 && currentHour < 22)
+            {
+                shiftStart = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 14, 0, 0, DateTimeKind.Utc);
+            }
+            else
+            {
+                var previousDay = currentTime.AddDays(-1);
+                shiftStart = new DateTime(currentTime.Year, currentTime.Month, previousDay.Day, 22, 0, 0, DateTimeKind.Utc);
+            }
+
+            string query = $@"
+                from(bucket: ""CellTracker"")
+                    |> range(start: {shiftStart:yyyy-MM-ddTHH:mm:ssZ}, stop: {currentTime:yyyy-MM-ddTHH:mm:ssZ})
+                    |> filter(fn: (r) => r._measurement == ""Telemetry"")
+                    |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
+                    |> filter(fn: (r) => r.OperatorId == ""{operatorId}"" and r.WorkStationId == ""{workStationId}"")
+                ";
+
+            return await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
         }
     }
 }

@@ -21,7 +21,7 @@ namespace CellTracker.Api.Endpoints
                 to = from;
                 from = tmp;
             }
-            var data = await telemetryFetchService.GetTelemetryAsync(from, to);
+            var data = await telemetryFetchService.GetTelemetryBetweenAsync(from, to);
             return Results.Ok(data);
         }
 

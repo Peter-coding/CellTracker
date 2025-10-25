@@ -123,8 +123,11 @@ volumes:
   influxdb2-config:
   mosquitto_data:
   # mosquitto_config:
+
+#Must be added externally
+#""docker network create cellnet" command for developement
 networks:
   cellnet:
     name: cellnet
     driver: bridge
-    external: true
+    external: true 

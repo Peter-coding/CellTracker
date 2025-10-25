@@ -13,8 +13,14 @@ namespace CellTracker.Api.Ingestion.Model
 
         [Column("OperatorId")]
         public string OperatorId { get; set; }
+
+        [Column("ProductId")]
         public string ProductId { get; set; }
+
+        [Column("IsCompleted")]
         public bool IsCompleted { get; set; }
+
+        [Column("Error")]
         public byte Error { get; set; }
 
         [Column("TimeStamp", IsTimestamp = true)]

@@ -1,6 +1,6 @@
 ﻿using CellTracker.Api.Ingestion.Model;
 using CellTracker.Api.Models.OperatorTask;
-using CellTracker.Api.Services.Operator;
+using CellTracker.Api.Services.OperatorTaskService;
 using CellTracker.Api.Services.TelemetryRepository;
 
 namespace CellTracker.Api.Endpoints

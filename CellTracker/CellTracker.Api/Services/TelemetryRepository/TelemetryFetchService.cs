@@ -11,12 +11,12 @@ namespace CellTracker.Api.Services.TelemetryRepository
     public class TelemetryFetchService : ITelemetryFetchService
     {
         private readonly InfluxDBClient _influxDBClient;
-        private readonly IUnitOfWork _unitOfWork;
+        
         public TelemetryFetchService(IUnitOfWork unitOfWork)
         {
             var connectionString = ConnectionConfiguration.GetInfluxDbConnectionString();
             _influxDBClient = new InfluxDBClient(connectionString);
-            _unitOfWork = unitOfWork;
+            //ne unit of worköt injektáljak, hanem a ráépülő servicet.
         }
 
         public async Task<List<TelemetryData>> GetBetweenAsync(DateTime from, DateTime to)
@@ -78,7 +78,6 @@ namespace CellTracker.Api.Services.TelemetryRepository
         {
 
         }
-
 
         private DateTime GetCurrentShiftStart(DateTime currentTime)
         {

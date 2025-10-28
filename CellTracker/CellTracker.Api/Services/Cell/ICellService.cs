@@ -1,4 +1,5 @@
 ﻿using CellTracker.Api.Models;
+using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Models.OperatorTask;
 
 namespace CellTracker.Api.Services.CellService

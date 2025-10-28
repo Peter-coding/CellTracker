@@ -11,9 +11,11 @@ namespace CellTracker.Api.Endpoints
         {
             var path = $"/{pathPrefix}";
      
-            app.MapGet($"{path}/GetTelemetryData", GetTelemetryData);
+            app.MapGet($"{path}/GetTelemetryDataBetween", GetTelemetryDataBetween);
+            app.MapGet($"{path}/GetTelemetryDataInCurrentShift", GetTelemetryDataInCurrentShift);
+            app.MapGet($"{path}/GetTelemetryCountInCurrentShift", GetTelemetryCountInCurrentShift);
         }
-        public async static Task<IResult> GetTelemetryData(ITelemetryFetchService telemetryFetchService, DateTime from, DateTime to)
+        public async static Task<IResult> GetTelemetryDataBetween(ITelemetryFetchService telemetryFetchService, DateTime from, DateTime to)
         {
             if (from > to)
             {
@@ -21,9 +23,23 @@ namespace CellTracker.Api.Endpoints
                 to = from;
                 from = tmp;
             }
-            var data = await telemetryFetchService.GetTelemetryBetweenAsync(from, to);
+            var data = await telemetryFetchService.GetBetweenAsync(from, to);
             return Results.Ok(data);
         }
+
+        public async static Task<IResult> GetTelemetryDataInCurrentShift(ITelemetryFetchService telemetryFetchService, string operatorId, string workStationId)
+        {
+            var data = await telemetryFetchService.GetTelemetryDataInCurrentShiftAsync(operatorId, workStationId);
+            return Results.Ok(data);
+        }
+
+        public async static Task<IResult> GetTelemetryCountInCurrentShift(ITelemetryFetchService telemetryFetchService, string operatorId, string workStationId)
+        {
+            var count = await telemetryFetchService.GetCountInCurrentShiftAsync(operatorId, workStationId);
+            return Results.Ok(count);
+        }
+
+
 
     }
 }

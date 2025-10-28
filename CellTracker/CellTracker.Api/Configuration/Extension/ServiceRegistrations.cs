@@ -4,6 +4,7 @@ using CellTracker.Api.Infrastructure.Distributor;
 using CellTracker.Api.Infrastructure.Logging;
 using CellTracker.Api.Infrastructure.UserIdentiy;
 using CellTracker.Api.Ingestion.Queue;
+using CellTracker.Api.Models;
 using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.Operator;
@@ -52,6 +53,10 @@ namespace CellTracker.Api.Configuration.Extension
 
             //Add more Repositories later to inject it into UnitOfWork
             builder.Services.AddScoped<IRepository<OperatorTask>, OperatorTaskRepository>();
+            builder.Services.AddScoped<IRepository<Factory>, FactoryRepository>();
+            builder.Services.AddScoped<IRepository<ProductionLine>, ProductionLineRepository>();
+            builder.Services.AddScoped<IRepository<Cell>, CellRepository>();
+            builder.Services.AddScoped<IRepository<WorkStation>, WorkStationRepository>();
 
             // Add service
             builder.Services.AddScoped<IOperatorService, OperatorService>();

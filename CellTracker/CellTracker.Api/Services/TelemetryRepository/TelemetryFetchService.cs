@@ -1,6 +1,7 @@
 ﻿using CellTracker.Api.Configuration.ExternalConnection;
 using CellTracker.Api.Ingestion.Model;
 using CellTracker.Api.Models;
+using CellTracker.Api.Repositories;
 using InfluxDB.Client;
 using Microsoft.AspNetCore.Routing;
 using System.Runtime.Intrinsics.X86;
@@ -10,13 +11,15 @@ namespace CellTracker.Api.Services.TelemetryRepository
     public class TelemetryFetchService : ITelemetryFetchService
     {
         private readonly InfluxDBClient _influxDBClient;
-        public TelemetryFetchService()
+        private readonly IUnitOfWork _unitOfWork;
+        public TelemetryFetchService(IUnitOfWork unitOfWork)
         {
             var connectionString = ConnectionConfiguration.GetInfluxDbConnectionString();
             _influxDBClient = new InfluxDBClient(connectionString);
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<TelemetryData>> GetTelemetryBetweenAsync(DateTime from, DateTime to)
+        public async Task<List<TelemetryData>> GetBetweenAsync(DateTime from, DateTime to)
         {
             var fromUtc = from.ToUniversalTime();
             var toUtc = to.ToUniversalTime();
@@ -31,7 +34,7 @@ namespace CellTracker.Api.Services.TelemetryRepository
             return await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
         }
 
-        public async Task<int> GetTelemetryDataCountInCurrentShiftAsync(string operatorId, string workStationId)
+        public async Task<int> GetCountInCurrentShiftAsync(string operatorId, string workStationId)
         {
             var currentTime = DateTime.UtcNow;
             var shiftStart = GetCurrentShiftStart(currentTime);
@@ -64,6 +67,18 @@ namespace CellTracker.Api.Services.TelemetryRepository
 
             return await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
         }
+
+
+        public async Task<Dictionary<string, int>> GetTelemetryCountPerWorkStationInCurrentShiftAsync(Guid cellId)
+        {
+           
+        }
+
+        public async Task<Dictionary<string, int>> GetTelemetryCountPerProductionLineAsync(Guid productionLineId)
+        {
+
+        }
+
 
         private DateTime GetCurrentShiftStart(DateTime currentTime)
         {

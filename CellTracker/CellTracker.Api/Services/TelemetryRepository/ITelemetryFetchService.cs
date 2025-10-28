@@ -8,6 +8,6 @@ namespace CellTracker.Api.Services.TelemetryRepository
         public Task<List<TelemetryData>> GetTelemetryDataInCurrentShiftAsync(string OperatorId, string WorkStationId);
         public Task<int> GetCountInCurrentShiftAsync(string OperatorId, string WorkStationId);
         public Task<Dictionary<string, int>> GetTelemetryCountPerWorkStationInCurrentShiftAsync(Guid cellId);
-        public Task<Dictionary<string, int>> GetTelemetryCountPerProductionLineAsync(Guid productionLineId)
+        public Task<Dictionary<string, int>> GetTelemetryCountPerProductionLineAsync(Guid productionLineId);
     }
 }

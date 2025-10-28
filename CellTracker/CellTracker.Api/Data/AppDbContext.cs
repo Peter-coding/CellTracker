@@ -1,6 +1,6 @@
 ﻿using CellTracker.Api.Auth;
+using CellTracker.Api.Models;
 using CellTracker.Api.Models.OperatorTask;
-using InfluxDB.Client.Api.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
@@ -16,6 +16,10 @@ namespace CellTracker.Api.Data
 
         // TODO class DbSets<>
         public DbSet<OperatorTask> OperatorTasks { get; set; }
+        public DbSet<Factory> Factories { get; set; }
+        public DbSet<ProductionLine> ProductionLines { get; set; }
+        public DbSet<Cell> Cells { get; set; }
+        public DbSet<WorkStation> WorkStations { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.HasDefaultSchema(Schemas.Application);

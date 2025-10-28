@@ -14,6 +14,7 @@ namespace CellTracker.Api.Endpoints
             app.MapGet($"{path}/GetTelemetryDataBetween", GetTelemetryDataBetween);
             app.MapGet($"{path}/GetTelemetryDataInCurrentShift", GetTelemetryDataInCurrentShift);
             app.MapGet($"{path}/GetTelemetryCountInCurrentShift", GetTelemetryCountInCurrentShift);
+            app.MapGet($"{path}/GetTelemetryCountPerWorkStationInCurrentShift", GetTelemetryCountPerWorkStationInCurrentShiftAsync);
         }
         public async static Task<IResult> GetTelemetryDataBetween(ITelemetryFetchService telemetryFetchService, DateTime from, DateTime to)
         {
@@ -39,7 +40,10 @@ namespace CellTracker.Api.Endpoints
             return Results.Ok(count);
         }
 
-
-
+        public async static Task<IResult> GetTelemetryCountPerWorkStationInCurrentShiftAsync(ITelemetryFetchService telemetryFetchService, Guid cellId)
+        {
+            var workStationWithCount = await telemetryFetchService.GetTelemetryCountPerWorkStationInCurrentShiftAsync(cellId);
+            return Results.Ok(workStationWithCount);
+        }
     }
 }

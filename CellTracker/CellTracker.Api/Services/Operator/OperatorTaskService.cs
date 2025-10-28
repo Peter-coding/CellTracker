@@ -1,13 +1,13 @@
 ﻿using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
 
-namespace CellTracker.Api.Services.Operator
+namespace CellTracker.Api.Services.OperatorTaskService
 {
     //Business logic layer for OperatorTask related tasks.
-    public class OperatorService : IOperatorService
+    public class OperatorTaskService : IOperatorTaskService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public OperatorService(IUnitOfWork unitOfWork)
+        public OperatorTaskService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             

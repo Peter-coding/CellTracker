@@ -1,9 +1,9 @@
 ﻿using CellTracker.Api.Data;
 using CellTracker.Api.Models;
 
-namespace CellTracker.Api.Repositories
+namespace CellTracker.Api.Repositories.ProductionLineRepository
 {
-    public class ProductionLineRepository : Repository<ProductionLine>
+    public class ProductionLineRepository : Repository<ProductionLine>, IProductionLineRepository
     {
         public ProductionLineRepository(AppDbContext dbContext) : base(dbContext)
         {

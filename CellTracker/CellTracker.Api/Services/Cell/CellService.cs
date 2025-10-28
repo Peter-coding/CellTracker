@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Models;
 using CellTracker.Api.Repositories;
+using System.Threading.Tasks;
 
 namespace CellTracker.Api.Services.CellService
 {
@@ -27,6 +28,11 @@ namespace CellTracker.Api.Services.CellService
             throw new NotImplementedException();
         }
 
+        public async Task<ICollection<WorkStation>> GetWorkStationsOfCellAsync(Guid guid)
+        {
+            return await  _unitOfWork.CellRepository.GetWorkStationsOfCell(guid);
+        }
+
         public void RemoveCellById(Guid id)
         {
             throw new NotImplementedException();
@@ -36,5 +42,7 @@ namespace CellTracker.Api.Services.CellService
         {
             throw new NotImplementedException();
         }
+
+
     }
 }

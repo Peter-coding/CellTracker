@@ -11,15 +11,6 @@ namespace CellTracker.Api.Ingestion.Model
         [Column("WorkStationId")]
         public string WorkStationId { get; set; }
 
-        [Column("CellId")]
-        public string CellId { get; set; }
-
-        [Column("ProductionLineId")]
-        public string ProductionLineId { get; set; }
-
-        [Column("FactoryId")]
-        public string FactoryId { get; set; }
-
         [Column("OperatorId")]
         public string OperatorId { get; set; }
 

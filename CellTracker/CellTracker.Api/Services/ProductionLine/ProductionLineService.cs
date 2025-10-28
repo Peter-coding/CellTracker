@@ -1,4 +1,5 @@
 ﻿using CellTracker.Api.Models;
+using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Repositories;
 
 namespace CellTracker.Api.Services.ProductionLineService
@@ -10,6 +11,13 @@ namespace CellTracker.Api.Services.ProductionLineService
         {
             _unitOfWork = unitOfWork;
 
+        }
+
+        public async Task<Cell> AddNextCellToProductionLine(CellDto cellDto, Guid productionLineId)
+        {
+            var cell = await _unitOfWork.ProductionLineRepository.AddNextCellToProductionLine(cellDto, productionLineId);
+            await _unitOfWork.CompleteAsync();
+            return cell;
         }
 
         public ProductionLine AddProductionLine(ProductionLine productionLine)

@@ -11,12 +11,12 @@ namespace CellTracker.Api.Endpoints
         {
             var path = $"/{pathPrefix}";
      
-            app.MapGet($"{path}/GetTelemetryDataBetween", GetTelemetryDataBetween);
+            app.MapGet($"{path}/GetTelemetryDataBetween", GetTelemetryDataBetweenAsync);
             app.MapGet($"{path}/GetTelemetryDataInCurrentShift", GetTelemetryDataInCurrentShift);
             app.MapGet($"{path}/GetTelemetryCountInCurrentShift", GetTelemetryCountInCurrentShift);
             app.MapGet($"{path}/GetTelemetryCountPerWorkStationInCurrentShift", GetTelemetryCountPerWorkStationInCurrentShiftAsync);
         }
-        public async static Task<IResult> GetTelemetryDataBetween(ITelemetryFetchService telemetryFetchService, DateTime from, DateTime to)
+        public async static Task<IResult> GetTelemetryDataBetweenAsync(ITelemetryFetchService telemetryFetchService, DateTime from, DateTime to)
         {
             if (from > to)
             {

@@ -1,4 +1,5 @@
 ﻿using CellTracker.Api.Models;
+using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Models.OperatorTask;
 
 namespace CellTracker.Api.Services.ProductionLineService
@@ -10,5 +11,6 @@ namespace CellTracker.Api.Services.ProductionLineService
         public Task<ProductionLine> GetProductionLineById(Guid id);
         public void RemoveProductionLineById(Guid id);
         public void UpdateProductionLine(ProductionLine productionLine);
+        public Task<Cell> AddNextCellToProductionLine(CellDto cellDto, Guid productionLineId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CellTracker.Api.Models;
+using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Repositories;
 using System.Threading.Tasks;
 
@@ -42,7 +43,5 @@ namespace CellTracker.Api.Services.CellService
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

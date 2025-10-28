@@ -17,7 +17,6 @@ using CellTracker.Api.Services.OperatorTaskService;
 using CellTracker.Api.Services.ProductionLineService;
 using CellTracker.Api.Services.TelemetryRepository;
 using CellTracker.Api.Services.WorkStationService;
-using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Configuration.Extension
 {

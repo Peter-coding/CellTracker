@@ -9,7 +9,7 @@ namespace CellTracker.Api.Endpoints
         {
             var path = $"/{pathPrefix}";
 
-            app.MapPost($"{path}/AddNextCellToProductionLine", AddNextCellToProductionLineAsync);
+            app.MapPost($"{path}/AddNextCellToProdLine", AddNextCellToProductionLineAsync);
         }
 
         public async static Task<IResult> AddNextCellToProductionLineAsync(IProductionLineService productionLineService, CellDto cellDto, Guid productionLineId)

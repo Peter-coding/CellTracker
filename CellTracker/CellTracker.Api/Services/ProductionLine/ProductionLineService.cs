@@ -1,6 +1,7 @@
-﻿using CellTracker.Api.Models;
+﻿using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Services.ProductionLineService
 {
@@ -15,9 +16,30 @@ namespace CellTracker.Api.Services.ProductionLineService
 
         public async Task<Cell> AddNextCellToProductionLine(CellDto cellDto, Guid productionLineId)
         {
-            var cell = await _unitOfWork.ProductionLineRepository.AddNextCellToProductionLine(cellDto, productionLineId);
-            await _unitOfWork.CompleteAsync();
+            var productionLine = _unitOfWork.ProductionLineRepository.GetAll().Where(p => p.Id == productionLineId);
+            if(productionLine == null) {
+                throw new ArgumentException("Production line not found");
+            }
+            Cell cell = new Cell
+            {
+                Name = cellDto.Name,
+                Description = cellDto.Description,
+                ProductionLineId = productionLineId
+            };
+            cell.OrdinalNumber = GetNextOrdinalNumberForCellOnProductionLine(productionLineId);
+            cell.Id = Guid.NewGuid();
+            _unitOfWork.CellRepository.Add(cell);
             return cell;
+        }
+
+        private int GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
+        {
+            var productionLine = _unitOfWork.ProductionLineRepository.GetAll().FirstOrDefault(p => p.Id == productionLineId);
+            if (productionLine!= null && !productionLine.Cells.Any())
+            {
+                return 1;
+            }
+            return productionLine.Cells.Max(c => c.OrdinalNumber) + 1;
         }
 
         public ProductionLine AddProductionLine(ProductionLine productionLine)

@@ -1,4 +1,4 @@
-﻿using CellTracker.Api.Models;
+﻿using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Repositories;
 using System.Threading.Tasks;
@@ -31,7 +31,7 @@ namespace CellTracker.Api.Services.CellService
 
         public async Task<ICollection<WorkStation>> GetWorkStationsOfCellAsync(Guid guid)
         {
-            return await  _unitOfWork.CellRepository.GetWorkStationsOfCell(guid);
+              return _unitOfWork.WorkStationRepository.GetAll().Where(ws => ws.CellId == guid).ToList();
         }
 
         public void RemoveCellById(Guid id)

@@ -1,4 +1,4 @@
-﻿using CellTracker.Api.Models;
+﻿using CellTracker.Api.Models.Configuration;
 
 namespace CellTracker.Api.Services.WorkStationService
 {

@@ -1,5 +1,5 @@
 ﻿using CellTracker.Api.Auth;
-using CellTracker.Api.Models;
+using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.OperatorTask;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

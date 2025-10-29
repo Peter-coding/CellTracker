@@ -1,7 +1,7 @@
 ﻿using CellTracker.Api.Models.Base;
 using System.ComponentModel.DataAnnotations;
 
-namespace CellTracker.Api.Models
+namespace CellTracker.Api.Models.Configuration
 {
     public class ProductionLine : BaseEntity
     {

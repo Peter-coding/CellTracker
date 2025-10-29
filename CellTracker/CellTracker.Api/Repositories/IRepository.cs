@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Data;
 using CellTracker.Api.Models.Base;
+using CellTracker.Api.Models.Dto;
 using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Repositories

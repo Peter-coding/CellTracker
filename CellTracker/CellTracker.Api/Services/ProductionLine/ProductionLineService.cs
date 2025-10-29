@@ -16,8 +16,8 @@ namespace CellTracker.Api.Services.ProductionLineService
 
         public async Task<Cell> AddNextCellToProductionLine(CellDto cellDto, Guid productionLineId)
         {
-            var productionLine = _unitOfWork.ProductionLineRepository.GetAll().Where(p => p.Id == productionLineId);
-            if(productionLine == null) {
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);
+            if (productionLine == null) {
                 throw new ArgumentException("Production line not found");
             }
             Cell cell = new Cell
@@ -26,15 +26,15 @@ namespace CellTracker.Api.Services.ProductionLineService
                 Description = cellDto.Description,
                 ProductionLineId = productionLineId
             };
-            cell.OrdinalNumber = GetNextOrdinalNumberForCellOnProductionLine(productionLineId);
+            cell.OrdinalNumber = await GetNextOrdinalNumberForCellOnProductionLine(productionLineId);
             cell.Id = Guid.NewGuid();
             _unitOfWork.CellRepository.Add(cell);
             return cell;
         }
 
-        private int GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
+        private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
         {
-            var productionLine = _unitOfWork.ProductionLineRepository.GetAll().FirstOrDefault(p => p.Id == productionLineId);
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);
             if (productionLine!= null && !productionLine.Cells.Any())
             {
                 return 1;

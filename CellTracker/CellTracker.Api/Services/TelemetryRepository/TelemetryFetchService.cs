@@ -13,7 +13,7 @@ namespace CellTracker.Api.Services.TelemetryRepository
             _influxDBClient = new InfluxDBClient(connectionString);
         }
 
-         public Task<List<TelemetryData>> GetTelemetryAsync(DateTime from, DateTime to)
+        public Task<List<TelemetryData>> GetTelemetryAsync(DateTime from, DateTime to)
         {
             var fromUtc = from.ToUniversalTime();
             var toUtc = to.ToUniversalTime();

@@ -81,9 +81,9 @@ namespace CellTracker.Api.Endpoints
             return Results.BadRequest("Factory could not be updated");
         }
 
-        public async static Task<IResult> DeleteFactoryAsync(IFactoryService factoryService, Guid guid)
+        public async static Task<IResult> DeleteFactoryAsync(IFactoryService factoryService, Guid factoryId)
         {
-            var result = await factoryService.RemoveFactoryById(guid);
+            var result = await factoryService.RemoveFactoryById(factoryId);
             if (result == true)
             {
                 return Results.Ok();

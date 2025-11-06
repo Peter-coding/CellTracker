@@ -1,6 +1,7 @@
 ﻿using CellTracker.Api.Models.Base;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace CellTracker.Api.Models.Configuration
 {
@@ -22,8 +23,10 @@ namespace CellTracker.Api.Models.Configuration
         [Required]
         public Guid FactoryId { get; set; }
 
-        [NotMapped]
+        [JsonIgnore]
         public Factory Factory { get; set; }
+
+        [JsonIgnore]
         public ICollection<Cell> Cells { get; set; } = new List<Cell>();
     }
 

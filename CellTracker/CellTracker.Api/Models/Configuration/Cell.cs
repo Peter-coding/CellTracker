@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Models.Base;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CellTracker.Api.Models.Configuration
 {
@@ -20,7 +21,6 @@ namespace CellTracker.Api.Models.Configuration
         public Guid ProductionLineId { get; set; }
 
         public ProductionLine ProductionLine { get; set; }
-
         public ICollection<WorkStation> WorkStations { get; set; } = new List<WorkStation>();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Models.Base;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CellTracker.Api.Models.Configuration
 {
@@ -21,8 +22,8 @@ namespace CellTracker.Api.Models.Configuration
         [Required]
         public Guid FactoryId { get; set; }
 
+        [NotMapped]
         public Factory Factory { get; set; }
-
         public ICollection<Cell> Cells { get; set; } = new List<Cell>();
     }
 

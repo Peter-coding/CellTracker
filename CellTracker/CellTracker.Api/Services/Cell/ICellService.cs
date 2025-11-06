@@ -6,11 +6,11 @@ namespace CellTracker.Api.Services.CellService
 {
     public interface ICellService
     {
-        public Cell AddCell(Cell cell);
-        public IQueryable<Cell> GetAllCells();
+        public Task<Cell> AddCell(Cell cell);
+        public Task<IEnumerable<Cell>> GetAllCells();
         public Task<Cell> GetCellById(Guid id);
-        public void RemoveCellById(Guid id);
-        public void UpdateCell(Cell cell);
+        public Task<bool> RemoveCellById(Guid id);
+        public Task<Cell> UpdateCell(Cell cell);
         public Task<ICollection<WorkStation>> GetWorkStationsOfCellAsync(Guid guid);
     }
 }

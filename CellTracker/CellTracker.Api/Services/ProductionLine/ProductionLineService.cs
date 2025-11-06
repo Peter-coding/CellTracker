@@ -11,7 +11,6 @@ namespace CellTracker.Api.Services.ProductionLineService
         public ProductionLineService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
         }
 
         public async Task<Cell> AddNextCellToProductionLine(CellDto cellDto, Guid productionLineId)
@@ -29,6 +28,7 @@ namespace CellTracker.Api.Services.ProductionLineService
             cell.OrdinalNumber = await GetNextOrdinalNumberForCellOnProductionLine(productionLineId);
             cell.Id = Guid.NewGuid();
             _unitOfWork.CellRepository.Add(cell);
+
             return cell;
         }
 
@@ -39,32 +39,54 @@ namespace CellTracker.Api.Services.ProductionLineService
             {
                 return 1;
             }
+
             return productionLine.Cells.Max(c => c.OrdinalNumber) + 1;
         }
 
-        public ProductionLine AddProductionLine(ProductionLine productionLine)
+        public async Task<ProductionLine> AddProductionLine(ProductionLine productionLine)
         {
-            throw new NotImplementedException();
+            _unitOfWork.ProductionLineRepository.Add(productionLine);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+
+            return productionLine;
         }
 
-        public IQueryable<ProductionLine> GetAllProductionLines()
+        public async Task<IEnumerable<ProductionLine>> GetAllProductionLines()
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.ProductionLineRepository.GetAll().ToListAsync();
         }
 
-        public Task<ProductionLine> GetProductionLineById(Guid id)
+        public async Task<ProductionLine> GetProductionLineById(Guid id)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
         }
 
-        public void RemoveProductionLineById(Guid id)
+        public async Task<bool> RemoveProductionLineById(Guid id)
         {
-            throw new NotImplementedException();
+            _unitOfWork.ProductionLineRepository.RemoveById(id);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        public void UpdateProductionLine(ProductionLine productionLine)
+        public async Task<ProductionLine> UpdateProductionLine(ProductionLine productionLine)
         {
-            throw new NotImplementedException();
+            _unitOfWork.ProductionLineRepository.Update(productionLine);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+
+            return productionLine;
         }
     }
 }

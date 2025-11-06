@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Models.Base;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CellTracker.Api.Models.Configuration
 {
@@ -7,6 +8,9 @@ namespace CellTracker.Api.Models.Configuration
     {
         [Key]
         public Guid Id { get; set; }
+
+        [Required]
+        public string MqttDeviceId { get; set; }
 
         [MaxLength(35)]
         public string Name { get; set; }

@@ -9,7 +9,7 @@ namespace CellTracker.Api.Configuration.JwtSettings
             return new JwtAuthOptions
             {
                 Key = Environment.GetEnvironmentVariable("JWT__KEY")
-                  ?? throw new InvalidOperationException("Missing JWT__KEY"),
+                  ?? "your-secret-key-here-that-should-also-be-fairly-long",
                 Issuer = Environment.GetEnvironmentVariable("JWT__ISSUER")
                   ?? "celltracker.api",
                 Audience = Environment.GetEnvironmentVariable("JWT__AUDIENCE")

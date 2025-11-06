@@ -24,7 +24,7 @@ namespace CellTracker.Api.Data
         {
             base.OnModelCreating(builder);
 
-            builder.HasDefaultSchema(Schemas.Identity);
+            builder.HasDefaultSchema(Schemas.Application);
 
             builder.Entity<RefreshToken>(entity =>
             {
@@ -169,6 +169,7 @@ namespace CellTracker.Api.Data
                 {
                     Id = Guid.Parse("99999999-9999-9999-9999-999999999999"),
                     Name = "WS-SLD-01",
+                    MqttDeviceId = "A1",
                     OrdinalNumber = 1,
                     Description = "Manual soldering station",
                     CellId = cell1Id
@@ -177,6 +178,7 @@ namespace CellTracker.Api.Data
                 {
                     Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                     Name = "WS-SLD-02",
+                    MqttDeviceId = "A2",
                     OrdinalNumber = 2,
                     Description = "Automated soldering robot arm",
                     CellId = cell1Id
@@ -185,6 +187,7 @@ namespace CellTracker.Api.Data
                 {
                     Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                     Name = "WS-INS-01",
+                    MqttDeviceId = "A3",
                     OrdinalNumber = 1,
                     Description = "Visual inspection camera station",
                     CellId = cell2Id
@@ -193,6 +196,7 @@ namespace CellTracker.Api.Data
                 {
                     Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                     Name = "WS-PKG-01",
+                    MqttDeviceId = "A4",
                     OrdinalNumber = 1,
                     Description = "Box assembly station",
                     CellId = cell3Id

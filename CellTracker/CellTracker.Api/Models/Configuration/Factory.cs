@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Models.Base;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CellTracker.Api.Models.Configuration
 {
@@ -25,7 +26,6 @@ namespace CellTracker.Api.Models.Configuration
 
         [MaxLength(20)]
         public string Phone { get; set; }
-
         public ICollection<ProductionLine> ProductionLines { get; set; } = new List<ProductionLine>();
     }
 }

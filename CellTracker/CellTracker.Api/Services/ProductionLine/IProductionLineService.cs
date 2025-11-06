@@ -6,11 +6,11 @@ namespace CellTracker.Api.Services.ProductionLineService
 {
     public interface IProductionLineService
     {
-        public ProductionLine AddProductionLine(ProductionLine productionLine);
-        public IQueryable<ProductionLine> GetAllProductionLines();
+        public Task<ProductionLine> AddProductionLine(ProductionLine productionLine);
+        public Task<IEnumerable<ProductionLine>> GetAllProductionLines();
         public Task<ProductionLine> GetProductionLineById(Guid id);
-        public void RemoveProductionLineById(Guid id);
-        public void UpdateProductionLine(ProductionLine productionLine);
+        public Task<bool> RemoveProductionLineById(Guid id);
+        public Task<ProductionLine> UpdateProductionLine(ProductionLine productionLine);
         public Task<Cell> AddNextCellToProductionLine(CellDto cellDto, Guid productionLineId);
     }
 }

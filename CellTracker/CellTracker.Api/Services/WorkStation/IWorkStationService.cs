@@ -4,10 +4,10 @@ namespace CellTracker.Api.Services.WorkStationService
 {
     public interface IWorkStationService
     {
-        public WorkStation AddWorkStation(WorkStation workStation);
-        public IQueryable<WorkStation> GetAllWorkStations();
+        public Task<WorkStation> AddWorkStation(WorkStation workStation);
+        public Task<IEnumerable<WorkStation>> GetAllWorkStations();
         public Task<WorkStation> GetWorkStationById(Guid id);
-        public void RemoveWorkStationById(Guid id);
-        public void UpdateWorkStation(WorkStation task);
+        public Task<bool> RemoveWorkStationById(Guid id);
+        public Task<WorkStation> UpdateWorkStation(WorkStation task);
     }
 }

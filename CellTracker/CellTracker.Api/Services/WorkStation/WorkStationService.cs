@@ -1,5 +1,7 @@
 ﻿using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Repositories;
+using InfluxDB.Client.Api.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Services.WorkStationService
 {
@@ -12,29 +14,50 @@ namespace CellTracker.Api.Services.WorkStationService
 
         }
 
-        public WorkStation AddWorkStation(WorkStation workStation)
+        public async Task<WorkStation> AddWorkStation(WorkStation workStation)
         {
-            throw new NotImplementedException();
+            _unitOfWork.WorkStationRepository.Add(workStation);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+
+            return workStation;
         }
 
-        public IQueryable<WorkStation> GetAllWorkStations()
+        public async Task<IEnumerable<WorkStation>> GetAllWorkStations()
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.WorkStationRepository.GetAll().ToListAsync();
         }
 
-        public Task<WorkStation> GetWorkStationById(Guid id)
+        public async Task<WorkStation> GetWorkStationById(Guid id)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.WorkStationRepository.GetByIdAsync(id);
         }
 
-        public void RemoveWorkStationById(Guid id)
+        public async Task<bool> RemoveWorkStationById(Guid id)
         {
-            throw new NotImplementedException();
+            _unitOfWork.WorkStationRepository.RemoveById(id);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        public void UpdateWorkStation(WorkStation task)
+        public async Task<WorkStation> UpdateWorkStation(WorkStation workStation)
         {
-            throw new NotImplementedException();
+            _unitOfWork.WorkStationRepository.Update(workStation);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+
+            return workStation;
         }
     }
 }

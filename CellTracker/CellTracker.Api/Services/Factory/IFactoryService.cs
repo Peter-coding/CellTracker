@@ -5,10 +5,10 @@ namespace CellTracker.Api.Services.FactoryService
 {
     public interface IFactoryService
     {
-        public Factory AddFactory(Factory factory);
-        public IQueryable<Factory> GetAllFactories();
+        public Task<Factory> AddFactory(Factory factory);
+        public Task<IEnumerable<Factory>> GetAllFactories();
         public Task<Factory> GetFactoryById(Guid id);
-        public void RemoveFactoryById(Guid id);
-        public void UpdateFactory(Factory factory);
+        public Task<bool> RemoveFactoryById(Guid id);
+        public Task<Factory> UpdateFactory(Factory factory);
     }
 }

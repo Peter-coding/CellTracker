@@ -1,5 +1,7 @@
 ﻿using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Repositories;
+using InfluxDB.Client.Api.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Services.FactoryService
 {
@@ -9,32 +11,51 @@ namespace CellTracker.Api.Services.FactoryService
         public FactoryService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
         }
 
-        public Factory AddFactory(Factory factory)
+        public async Task<Factory> AddFactory(Factory factory)
         {
-            throw new NotImplementedException();
+            _unitOfWork.FactoryRepository.Add(factory);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+            return factory;
         }
 
-        public IQueryable<Factory> GetAllFactories()
+        public async Task<IEnumerable<Factory>> GetAllFactories()
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.FactoryRepository.GetAll().ToListAsync();
         }
 
-        public Task<Factory> GetFactoryById(Guid id)
+        public async Task<Factory> GetFactoryById(Guid id)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.FactoryRepository.GetByIdAsync(id);
         }
 
-        public void RemoveFactoryById(Guid id)
+        public async Task<bool> RemoveFactoryById(Guid id)
         {
-            throw new NotImplementedException();
+            _unitOfWork.FactoryRepository.RemoveById(id);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        public void UpdateFactory(Factory factory)
+        public async Task<Factory> UpdateFactory(Factory factory)
         {
-            throw new NotImplementedException();
+            _unitOfWork.FactoryRepository.Update(factory);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+
+            return factory;
         }
     }
 }

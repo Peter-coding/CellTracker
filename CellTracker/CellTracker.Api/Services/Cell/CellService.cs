@@ -1,6 +1,7 @@
 ﻿using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace CellTracker.Api.Services.CellService
@@ -11,22 +12,27 @@ namespace CellTracker.Api.Services.CellService
         public CellService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
         }
 
-        public Cell AddCell(Cell cell)
+        public async Task<Cell> AddCell(Cell cell)
         {
-            throw new NotImplementedException();
+            _unitOfWork.CellRepository.Add(cell);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+            return cell;
         }
 
-        public IQueryable<Cell> GetAllCells()
+        public async Task<IEnumerable<Cell>> GetAllCells()
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.CellRepository.GetAll().ToListAsync();
         }
 
-        public Task<Cell> GetCellById(Guid id)
+        public async Task<Cell> GetCellById(Guid id)
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.CellRepository.GetByIdAsync(id);
         }
 
         public async Task<ICollection<WorkStation>> GetWorkStationsOfCellAsync(Guid guid)
@@ -34,14 +40,28 @@ namespace CellTracker.Api.Services.CellService
               return _unitOfWork.WorkStationRepository.GetAll().Where(ws => ws.CellId == guid).ToList();
         }
 
-        public void RemoveCellById(Guid id)
+        public async Task<bool> RemoveCellById(Guid id)
         {
-            throw new NotImplementedException();
+            _unitOfWork.CellRepository.RemoveById(id);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        public void UpdateCell(Cell cell)
+        public async Task<Cell> UpdateCell(Cell cell)
         {
-            throw new NotImplementedException();
+            _unitOfWork.CellRepository.Update(cell);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+
+            return cell;
         }
     }
 }

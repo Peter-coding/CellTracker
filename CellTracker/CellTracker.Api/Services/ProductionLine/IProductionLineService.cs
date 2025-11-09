@@ -12,5 +12,6 @@ namespace CellTracker.Api.Services.ProductionLineService
         public Task<bool> RemoveProductionLineById(Guid id);
         public Task<ProductionLine> UpdateProductionLine(UpdateProductionLineDto productionLineDto);
        public Task<bool> SetProductionLineStatus(Guid id, ProductionLineStatus status);
+        public Task<IEnumerable<Cell>> GetCellsInProdLine(Guid id);
     }
 }

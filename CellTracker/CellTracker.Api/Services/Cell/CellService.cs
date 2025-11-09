@@ -50,11 +50,6 @@ namespace CellTracker.Api.Services.CellService
             return await _unitOfWork.CellRepository.GetByIdAsync(id);
         }
 
-        public async Task<ICollection<WorkStation>> GetWorkStationsOfCellAsync(Guid guid)
-        {
-              return _unitOfWork.WorkStationRepository.GetAll().Where(ws => ws.CellId == guid).ToList();
-        }
-
         public async Task<bool> RemoveCellById(Guid id)
         {
             var item = await _unitOfWork.CellRepository.GetByIdAsync(id);
@@ -94,6 +89,15 @@ namespace CellTracker.Api.Services.CellService
             return cell;
         }
 
+        public async Task<IEnumerable<WorkStation>> GetWorkStationsOfCellAsync(Guid id)
+        {
+            var cell = await _unitOfWork.CellRepository.GetByIdAsync(id);
+            if (cell == null)
+            {
+                throw new ArgumentException("Cell not found");
+            }
+            return _unitOfWork.WorkStationRepository.GetAll().Where(ws => ws.CellId == id).ToList();
+        }
         private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
         {
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);

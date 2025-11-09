@@ -11,6 +11,6 @@ namespace CellTracker.Api.Services.CellService
         public Task<Cell> GetCellById(Guid id);
         public Task<bool> RemoveCellById(Guid id);
         public Task<Cell> UpdateCell(UpdateCellDto cellDto);
-        public Task<ICollection<WorkStation>> GetWorkStationsOfCellAsync(Guid guid);
+        public Task<IEnumerable<WorkStation>> GetWorkStationsOfCellAsync(Guid guid);
     }
 }

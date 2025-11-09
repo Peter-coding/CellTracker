@@ -27,6 +27,7 @@ namespace CellTracker.Api.Endpoints
             app.MapPut($"{path}/ProductionLine", UpdateProductionLineAsync);
             app.MapDelete($"{path}/ProductionLine", DeleteProductionLineAsync);
             app.MapPut($"{path}/SetProdLineStatus", SetProdLineStatus);
+            app.MapPut($"{path}/CellsInProdLine", GetCellsInProdLine);
 
             app.MapPost($"{path}/CreateWorkStation", CreateWorkStationAsync);
             app.MapGet($"{path}/WorkStationById", GetWorkStationByIdAsync);
@@ -39,6 +40,7 @@ namespace CellTracker.Api.Endpoints
             app.MapGet($"{path}/AllCells", GetAllCells);
             app.MapPut($"{path}/Cell", UpdateCellAsync);
             app.MapDelete($"{path}/Cell", DeleteCellAsync);
+            app.MapGet($"{path}/WorkStationsInCell", GetWorkStationsInCell);
         }
 
         public async static Task<IResult> CreateFactoryAsync(IFactoryService factoryService, CreateFactoryDto factoryDto)
@@ -132,6 +134,16 @@ namespace CellTracker.Api.Endpoints
                 return Results.Ok(result);
             }
             return Results.BadRequest("Production line could not be updated");
+        }
+
+        public async static Task<IResult> GetCellsInProdLine(IProductionLineService productionLineService, Guid productionLineId)
+        {
+            var result = await productionLineService.GetCellsInProdLine(productionLineId);
+            if (result != null)
+            {
+                return Results.Ok(result);
+            }
+            return Results.NotFound();
         }
 
         public async static Task<IResult> DeleteProductionLineAsync(IProductionLineService productionLineService, Guid productionLineId)
@@ -258,6 +270,16 @@ namespace CellTracker.Api.Endpoints
                 return Results.Ok();
             }
 
+            return Results.NotFound();
+        }
+
+        public async static Task<IResult> GetWorkStationsInCell(ICellService cellService, Guid cellId)
+        {
+            var result = await cellService.GetWorkStationsOfCellAsync(cellId);
+            if (result != null)
+            {
+                return Results.Ok(result);
+            }
             return Results.NotFound();
         }
     }

@@ -104,6 +104,19 @@ namespace CellTracker.Api.Services.ProductionLineService
             return true;
         }
 
+        public async Task<IEnumerable<Cell>> GetCellsInProdLine(Guid id)
+        {
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
+            if (productionLine == null)
+            {
+                throw new ArgumentException("Production Line not found");
+            }
+            var cells = await _unitOfWork.CellRepository.GetAll()
+                .Where(c => c.ProductionLineId == id)
+                .ToListAsync();
+            return cells;
+        }
+
         private async Task<int> GetNextOrdinalNumberForProdLineInFactory(Guid factoryId)
         {
             var factory = await _unitOfWork.FactoryRepository.GetByIdAsync(factoryId);
@@ -113,5 +126,7 @@ namespace CellTracker.Api.Services.ProductionLineService
             }
             return factory.ProductionLines.Max(pl => pl.OrdinalNumber) + 1;
         }
+
+
     }
 }

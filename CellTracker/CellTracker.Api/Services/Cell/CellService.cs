@@ -14,7 +14,7 @@ namespace CellTracker.Api.Services.CellService
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Cell> AddCell(CellDto cellDto)
+        public async Task<Cell> AddCell(CreateCellDto cellDto)
         {
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(cellDto.ProductionLineId);
             if (productionLine == null)
@@ -28,7 +28,7 @@ namespace CellTracker.Api.Services.CellService
                 Description = cellDto.Description,
                 ProductionLineId = cellDto.ProductionLineId,
                 OrdinalNumber = await GetNextOrdinalNumberForCellOnProductionLine(cellDto.ProductionLineId),
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             _unitOfWork.CellRepository.Add(cell);
@@ -72,8 +72,18 @@ namespace CellTracker.Api.Services.CellService
             return true;
         }
 
-        public async Task<Cell> UpdateCell(Cell cell)
+        public async Task<Cell> UpdateCell(UpdateCellDto cellDto)
         {
+            var cell = await _unitOfWork.CellRepository.GetByIdAsync(cellDto.Id);
+
+            //TODO add automapper
+            cell.Name = cellDto.Name;
+            cell.Description = cellDto.Description;
+            cell.ProductionLineId = cellDto.ProductionLineId;
+            cell.OrdinalNumber = cellDto.OrdinalNumber;
+            cell.ModifiedAt = DateTime.UtcNow;
+            cell.IsDeleted = cellDto.IsDeleted;
+           
             _unitOfWork.CellRepository.Update(cell);
             var count = await _unitOfWork.CompleteAsync();
             if (count == 0)

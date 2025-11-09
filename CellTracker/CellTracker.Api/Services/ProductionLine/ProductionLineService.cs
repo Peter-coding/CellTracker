@@ -13,7 +13,7 @@ namespace CellTracker.Api.Services.ProductionLineService
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ProductionLine> AddProductionLine(ProductionLineDto productionLineDto)
+        public async Task<ProductionLine> AddProductionLine(CreateProductionLineDto productionLineDto)
         {
             var factory = await _unitOfWork.FactoryRepository.GetByIdAsync(productionLineDto.FactoryId);
             if (factory == null)
@@ -24,8 +24,9 @@ namespace CellTracker.Api.Services.ProductionLineService
             {
                 Name = productionLineDto.Name,
                 Description = productionLineDto.Description,
+                FactoryId = productionLineDto.FactoryId,
                 OrdinalNumber = await GetNextOrdinalNumberForProdLineInFactory(productionLineDto.FactoryId),
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
             _unitOfWork.ProductionLineRepository.Add(productionLine);
             var count = await _unitOfWork.CompleteAsync();
@@ -64,8 +65,18 @@ namespace CellTracker.Api.Services.ProductionLineService
             return true;
         }
 
-        public async Task<ProductionLine> UpdateProductionLine(ProductionLine productionLine)
+        public async Task<ProductionLine> UpdateProductionLine(UpdateProductionLineDto productionLineDto)
         {
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineDto.Id);
+            //TODO add automapper
+            productionLine.Name = productionLineDto.Name;
+            productionLine.Description = productionLineDto.Description;
+            productionLine.IsDeleted = productionLineDto.IsDeleted;
+            productionLine.FactoryId = productionLineDto.FactoryId;
+            productionLine.OrdinalNumber = productionLineDto.OrdinalNumber;
+            productionLine.Status = productionLineDto.Status;
+            productionLine.ModifiedAt = DateTime.UtcNow;
+
             _unitOfWork.ProductionLineRepository.Update(productionLine);
             var count = await _unitOfWork.CompleteAsync();
             if (count == 0)

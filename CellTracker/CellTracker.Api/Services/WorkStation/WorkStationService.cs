@@ -14,7 +14,7 @@ namespace CellTracker.Api.Services.WorkStationService
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<WorkStation> AddWorkStation(WorkStationDto workStationDto)
+        public async Task<WorkStation> AddWorkStation(CreateWorkStationDto workStationDto)
         {
             var cell = await _unitOfWork.CellRepository.GetByIdAsync(workStationDto.CellId);
             if(cell == null)
@@ -28,7 +28,7 @@ namespace CellTracker.Api.Services.WorkStationService
                 Description = workStationDto.Description,
                 CellId = workStationDto.CellId,
                 OrdinalNumber = await GetNextOrdinalNumberForWorkStation(workStationDto.CellId),
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
             _unitOfWork.WorkStationRepository.Add(workStation);
             var count = await _unitOfWork.CompleteAsync();
@@ -67,8 +67,19 @@ namespace CellTracker.Api.Services.WorkStationService
             return true;
         }
 
-        public async Task<WorkStation> UpdateWorkStation(WorkStation workStation)
+        public async Task<WorkStation> UpdateWorkStation(UpdateWorkStationDto workStationDto)
         {
+            var workStation = await _unitOfWork.WorkStationRepository.GetByIdAsync(workStationDto.Id);
+
+            //TODO add automapper
+            workStation.Name = workStationDto.Name;
+            workStation.Description = workStationDto.Description;
+            workStation.CellId = workStationDto.CellId;
+            workStation.OrdinalNumber = workStationDto.OrdinalNumber;
+            workStation.IsDeleted = workStationDto.IsDeleted;
+            workStation.MqttDeviceId = workStationDto.MqttDeviceId;
+            workStation.ModifiedAt = DateTime.UtcNow;
+
             _unitOfWork.WorkStationRepository.Update(workStation);
             var count = await _unitOfWork.CompleteAsync();
             if (count == 0)

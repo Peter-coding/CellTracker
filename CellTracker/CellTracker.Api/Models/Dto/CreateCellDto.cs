@@ -2,7 +2,7 @@
 
 namespace CellTracker.Api.Models.Dto
 {
-    public class CellDto
+    public class CreateCellDto
     {
         public string Name { get; set; }
         public string? Description { get; set; }

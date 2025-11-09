@@ -41,9 +41,9 @@ namespace CellTracker.Api.Endpoints
             app.MapDelete($"{path}/Cell", DeleteCellAsync);
         }
 
-        public async static Task<IResult> CreateFactoryAsync(IFactoryService factoryService, Factory factory)
+        public async static Task<IResult> CreateFactoryAsync(IFactoryService factoryService, CreateFactoryDto factoryDto)
         {
-            var created = await factoryService.AddFactory(factory);
+            var created = await factoryService.AddFactory(factoryDto);
             if (created != null)
             {
                 return Results.Ok(created);
@@ -71,9 +71,9 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> UpdateFactoryAsync(IFactoryService factoryService, Factory factory)
+        public async static Task<IResult> UpdateFactoryAsync(IFactoryService factoryService, UpdateFactoryDto factoryDto)
         {
-            var result = await factoryService.UpdateFactory(factory);
+            var result = await factoryService.UpdateFactory(factoryDto);
             if (result != null)
             {
                 return Results.Ok(result);
@@ -92,7 +92,7 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> CreateProductionLineAsync(IProductionLineService productionLineService, ProductionLineDto productionLineDto)
+        public async static Task<IResult> CreateProductionLineAsync(IProductionLineService productionLineService, CreateProductionLineDto productionLineDto)
         {
             var result = await productionLineService.AddProductionLine(productionLineDto);
             if (result != null)
@@ -124,9 +124,9 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> UpdateProductionLineAsync(IProductionLineService productionLineService, ProductionLine productionLine)
+        public async static Task<IResult> UpdateProductionLineAsync(IProductionLineService productionLineService, UpdateProductionLineDto productionLineDto)
         {
-            var result = await productionLineService.UpdateProductionLine(productionLine);
+            var result = await productionLineService.UpdateProductionLine(productionLineDto);
             if (result != null)
             {
                 return Results.Ok(result);
@@ -153,7 +153,7 @@ namespace CellTracker.Api.Endpoints
             }
             return Results.BadRequest("Production line status could not be updated");
         }
-        public async static Task<IResult> CreateWorkStationAsync(IWorkStationService workStationService, WorkStationDto workStationDto)
+        public async static Task<IResult> CreateWorkStationAsync(IWorkStationService workStationService, CreateWorkStationDto workStationDto)
         {
             var result = await workStationService.AddWorkStation(workStationDto);
             if (result != null)
@@ -185,9 +185,9 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> UpdateWorkStationAsync(IWorkStationService workStationService, WorkStation workStation)
+        public async static Task<IResult> UpdateWorkStationAsync(IWorkStationService workStationService, UpdateWorkStationDto workStationDto)
         {
-            var result = await workStationService.UpdateWorkStation(workStation);
+            var result = await workStationService.UpdateWorkStation(workStationDto);
             if (result != null)
             {
                 return Results.Ok(result);
@@ -207,7 +207,7 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> CreateCellAsync(ICellService cellService, CellDto cellDto)
+        public async static Task<IResult> CreateCellAsync(ICellService cellService, CreateCellDto cellDto)
         {
             var result = await cellService.AddCell(cellDto);
             if (result != null)
@@ -239,10 +239,9 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> UpdateCellAsync(ICellService cellService, CellDto cell)
+        public async static Task<IResult> UpdateCellAsync(ICellService cellService, UpdateCellDto cellDto)
         {
-
-            var result = await cellService.UpdateCell(cell);
+            var result = await cellService.UpdateCell(cellDto);
             if (result != null)
             {
                 return Results.Ok(result);

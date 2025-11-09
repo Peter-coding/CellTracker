@@ -44,7 +44,7 @@ namespace CellTracker.Api.WorkerService.Ingestion
                 {
                     OperatorId = topic,
                     WorkStationId = payload,
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                 };
 
                 // Add message to queue

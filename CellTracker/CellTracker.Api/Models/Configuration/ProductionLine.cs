@@ -7,13 +7,10 @@ namespace CellTracker.Api.Models.Configuration
 {
     public class ProductionLine : BaseEntity
     {
-        [Key]
-        public Guid Id { get; set; }
-
         [MaxLength(35)]
         public string Name { get; set; }
 
-        public short OrdinalNumber { get; set; }
+        public int OrdinalNumber { get; set; }
 
         [MaxLength(200)]
         public string? Description { get; set; }  // optional Description

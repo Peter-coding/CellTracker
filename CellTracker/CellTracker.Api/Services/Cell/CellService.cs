@@ -14,8 +14,23 @@ namespace CellTracker.Api.Services.CellService
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Cell> AddCell(Cell cell)
+        public async Task<Cell> AddCell(CellDto cellDto)
         {
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(cellDto.ProductionLineId);
+            if (productionLine == null)
+            {
+                throw new ArgumentException("Production line not found");
+            }
+
+            Cell cell = new Cell
+            {
+                Name = cellDto.Name,
+                Description = cellDto.Description,
+                ProductionLineId = cellDto.ProductionLineId,
+                OrdinalNumber = await GetNextOrdinalNumberForCellOnProductionLine(cellDto.ProductionLineId),
+                CreatedAt = DateTime.Now
+            };
+
             _unitOfWork.CellRepository.Add(cell);
             var count = await _unitOfWork.CompleteAsync();
             if (count == 0)
@@ -42,6 +57,11 @@ namespace CellTracker.Api.Services.CellService
 
         public async Task<bool> RemoveCellById(Guid id)
         {
+            var item = await _unitOfWork.CellRepository.GetByIdAsync(id);
+            if (item.IsDeleted == true)
+            {
+                return true;
+            }
             _unitOfWork.CellRepository.RemoveById(id);
             var count = await _unitOfWork.CompleteAsync();
             if (count == 0)
@@ -62,6 +82,16 @@ namespace CellTracker.Api.Services.CellService
             }
 
             return cell;
+        }
+
+        private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
+        {
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);
+            if (productionLine != null && !productionLine.Cells.Any())
+            {
+                return 1;
+            }
+            return productionLine.Cells.Max(c => c.OrdinalNumber) + 1;
         }
     }
 }

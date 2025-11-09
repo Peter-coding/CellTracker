@@ -7,9 +7,6 @@ namespace CellTracker.Api.Models.Configuration
 {
     public class Cell : BaseEntity
     {
-        [Key]
-        public Guid Id { get; set; }
-
         [MaxLength(35)]
         public string Name { get; set; }
 

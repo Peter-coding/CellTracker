@@ -13,38 +13,20 @@ namespace CellTracker.Api.Services.ProductionLineService
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Cell> AddNextCellToProductionLine(CellDto cellDto, Guid productionLineId)
+        public async Task<ProductionLine> AddProductionLine(ProductionLineDto productionLineDto)
         {
-            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);
-            if (productionLine == null) {
-                throw new ArgumentException("Production line not found");
-            }
-            Cell cell = new Cell
+            var factory = await _unitOfWork.FactoryRepository.GetByIdAsync(productionLineDto.FactoryId);
+            if (factory == null)
             {
-                Name = cellDto.Name,
-                Description = cellDto.Description,
-                ProductionLineId = productionLineId
+                throw new ArgumentException("Factory not found");
+            }
+            ProductionLine productionLine = new ProductionLine
+            {
+                Name = productionLineDto.Name,
+                Description = productionLineDto.Description,
+                OrdinalNumber = await GetNextOrdinalNumberForProdLineInFactory(productionLineDto.FactoryId),
+                CreatedAt = DateTime.Now
             };
-            cell.OrdinalNumber = await GetNextOrdinalNumberForCellOnProductionLine(productionLineId);
-            cell.Id = Guid.NewGuid();
-            _unitOfWork.CellRepository.Add(cell);
-
-            return cell;
-        }
-
-        private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
-        {
-            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);
-            if (productionLine!= null && !productionLine.Cells.Any())
-            {
-                return 1;
-            }
-
-            return productionLine.Cells.Max(c => c.OrdinalNumber) + 1;
-        }
-
-        public async Task<ProductionLine> AddProductionLine(ProductionLine productionLine)
-        {
             _unitOfWork.ProductionLineRepository.Add(productionLine);
             var count = await _unitOfWork.CompleteAsync();
             if (count == 0)
@@ -67,6 +49,11 @@ namespace CellTracker.Api.Services.ProductionLineService
 
         public async Task<bool> RemoveProductionLineById(Guid id)
         {
+            var item = await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
+            if (item.IsDeleted == true)
+            {
+                return true;
+            }
             _unitOfWork.ProductionLineRepository.RemoveById(id);
             var count = await _unitOfWork.CompleteAsync();
             if (count == 0)
@@ -87,6 +74,33 @@ namespace CellTracker.Api.Services.ProductionLineService
             }
 
             return productionLine;
+        }
+
+        public async Task<bool> SetProductionLineStatus(Guid id, ProductionLineStatus status)
+        {
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
+            if (productionLine == null)
+            {
+                return false;
+            }
+            productionLine.Status = status;
+            _unitOfWork.ProductionLineRepository.Update(productionLine);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private async Task<int> GetNextOrdinalNumberForProdLineInFactory(Guid factoryId)
+        {
+            var factory = await _unitOfWork.FactoryRepository.GetByIdAsync(factoryId);
+            if (factory != null && !factory.ProductionLines.Any())
+            {
+                return 1;
+            }
+            return factory.ProductionLines.Max(pl => pl.OrdinalNumber) + 1;
         }
     }
 }

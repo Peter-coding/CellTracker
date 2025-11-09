@@ -36,6 +36,11 @@ namespace CellTracker.Api.Services.FactoryService
 
         public async Task<bool> RemoveFactoryById(Guid id)
         {
+            var item = await _unitOfWork.FactoryRepository.GetByIdAsync(id);
+            if (item.IsDeleted == true)
+            {
+                return true;
+            }
             _unitOfWork.FactoryRepository.RemoveById(id);
             var count = await _unitOfWork.CompleteAsync();
             if (count == 0)

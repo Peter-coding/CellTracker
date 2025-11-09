@@ -31,7 +31,11 @@ namespace CellTracker.Api.Repositories
         
         public virtual async void RemoveById(Guid id)
         {
-            _dbContext.Set<T>().Remove(await GetByIdAsync(id));
+            var item = _dbContext.Set<T>().Where(x => x.Id == id).FirstOrDefault();
+            if (item != null)
+            {
+                item.IsDeleted = true;
+            }
         }
 
         public virtual void Update(T entity)

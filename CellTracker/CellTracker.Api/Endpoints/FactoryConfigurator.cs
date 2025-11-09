@@ -22,11 +22,11 @@ namespace CellTracker.Api.Endpoints
             app.MapDelete($"{path}/Factory", DeleteFactoryAsync);
 
             app.MapPost($"{path}/CreateProductionLine", CreateProductionLineAsync);
-            app.MapPost($"{path}/AddNextCellToProdLine", AddNextCellToProductionLineAsync);
             app.MapGet($"{path}/ProductionLineById", GetProductionLineByIdAsync);
             app.MapGet($"{path}/AllProductionLines", GetAllProductionLines);
             app.MapPut($"{path}/ProductionLine", UpdateProductionLineAsync);
             app.MapDelete($"{path}/ProductionLine", DeleteProductionLineAsync);
+            app.MapPut($"{path}/SetProdLineStatus", SetProdLineStatus);
 
             app.MapPost($"{path}/CreateWorkStation", CreateWorkStationAsync);
             app.MapGet($"{path}/WorkStationById", GetWorkStationByIdAsync);
@@ -92,20 +92,9 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> AddNextCellToProductionLineAsync(IProductionLineService productionLineService, CellDto cellDto, Guid productionLineId)
+        public async static Task<IResult> CreateProductionLineAsync(IProductionLineService productionLineService, ProductionLineDto productionLineDto)
         {
-            var cell = await productionLineService.AddNextCellToProductionLine(cellDto, productionLineId);
-            if (cell != null)
-            {
-                return Results.Ok(cell);
-            }
-
-            return Results.BadRequest("Cell could not be added to production line");
-        }
-
-        public async static Task<IResult> CreateProductionLineAsync(IProductionLineService productionLineService, ProductionLine productionLine)
-        {
-            var result = await productionLineService.AddProductionLine(productionLine);
+            var result = await productionLineService.AddProductionLine(productionLineDto);
             if (result != null)
             {
                 return Results.Ok(result);
@@ -154,9 +143,19 @@ namespace CellTracker.Api.Endpoints
             }
             return Results.NotFound();
         }
-        public async static Task<IResult> CreateWorkStationAsync(IWorkStationService workStationService, WorkStation workStation)
+
+        public async static Task<IResult> SetProdLineStatus(IProductionLineService productionLineService, Guid productionLineId, ProductionLineStatus status)
         {
-            var result = await workStationService.AddWorkStation(workStation);
+            var result = await productionLineService.SetProductionLineStatus(productionLineId, status);
+            if (result != null)
+            {
+                return Results.Ok(result);
+            }
+            return Results.BadRequest("Production line status could not be updated");
+        }
+        public async static Task<IResult> CreateWorkStationAsync(IWorkStationService workStationService, WorkStationDto workStationDto)
+        {
+            var result = await workStationService.AddWorkStation(workStationDto);
             if (result != null)
             {
                 return Results.Ok(result);
@@ -208,9 +207,9 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> CreateCellAsync(ICellService cellService, Cell cell)
+        public async static Task<IResult> CreateCellAsync(ICellService cellService, CellDto cellDto)
         {
-            var result = await cellService.AddCell(cell);
+            var result = await cellService.AddCell(cellDto);
             if (result != null)
             {
                 return Results.Ok(result);
@@ -240,8 +239,9 @@ namespace CellTracker.Api.Endpoints
             return Results.NotFound();
         }
 
-        public async static Task<IResult> UpdateCellAsync(ICellService cellService, Cell cell)
+        public async static Task<IResult> UpdateCellAsync(ICellService cellService, CellDto cell)
         {
+
             var result = await cellService.UpdateCell(cell);
             if (result != null)
             {

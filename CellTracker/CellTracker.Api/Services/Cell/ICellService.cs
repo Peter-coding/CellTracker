@@ -6,7 +6,7 @@ namespace CellTracker.Api.Services.CellService
 {
     public interface ICellService
     {
-        public Task<Cell> AddCell(Cell cell);
+        public Task<Cell> AddCell(CellDto cellDt);
         public Task<IEnumerable<Cell>> GetAllCells();
         public Task<Cell> GetCellById(Guid id);
         public Task<bool> RemoveCellById(Guid id);

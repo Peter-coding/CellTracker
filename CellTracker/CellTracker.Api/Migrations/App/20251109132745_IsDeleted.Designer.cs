@@ -3,17 +3,20 @@ using System;
 using CellTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CellTracker.Api.Migrations.App
+namespace CellTracker.Api.App
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109132745_IsDeleted")]
+    partial class IsDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,7 +124,7 @@ namespace CellTracker.Api.Migrations.App
                         {
                             Id = "ee6739f0-97e2-496c-8ffe-74a39ae7a8e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7194e626-8170-4aef-9730-b2ca035794f2",
+                            ConcurrencyStamp = "fe2ff245-d389-4c67-814d-06e6a437c5dc",
                             Email = "test.user@example.com",
                             EmailConfirmed = true,
                             FirstName = "Test",
@@ -139,7 +142,7 @@ namespace CellTracker.Api.Migrations.App
                         {
                             Id = "35031d70-8287-4bfe-bd63-05a816f44885",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "328160e5-ac01-449d-b5ac-c829072a6ec7",
+                            ConcurrencyStamp = "c4bef9b2-2c17-42e7-a90e-81702e15f43f",
                             Email = "test.user1@example.com",
                             EmailConfirmed = true,
                             FirstName = "Test1",
@@ -171,9 +174,6 @@ namespace CellTracker.Api.Migrations.App
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(35)
@@ -198,7 +198,6 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Robotized soldering unit",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Soldering Cell",
                             OrdinalNumber = 1,
                             ProductionLineId = new Guid("33333333-3333-3333-3333-333333333333")
@@ -209,7 +208,6 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Optical quality inspection station",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Inspection Cell",
                             OrdinalNumber = 2,
                             ProductionLineId = new Guid("33333333-3333-3333-3333-333333333333")
@@ -220,7 +218,6 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Box sealing and labeling unit",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Packaging Cell",
                             OrdinalNumber = 1,
                             ProductionLineId = new Guid("55555555-5555-5555-5555-555555555555")
@@ -259,9 +256,6 @@ namespace CellTracker.Api.Migrations.App
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -286,7 +280,6 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "info@mainfactory.hu",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Main Factory",
                             Phone = "+36 1 555 1234"
                         },
@@ -299,7 +292,6 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "contact@backupplant.hu",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Backup Plant",
                             Phone = "+36 96 444 777"
                         });
@@ -324,16 +316,13 @@ namespace CellTracker.Api.Migrations.App
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(35)
                         .HasColumnType("character varying(35)");
 
-                    b.Property<int>("OrdinalNumber")
-                        .HasColumnType("integer");
+                    b.Property<short>("OrdinalNumber")
+                        .HasColumnType("smallint");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -352,9 +341,8 @@ namespace CellTracker.Api.Migrations.App
                             Description = "Automotive ECU assembly line",
                             FactoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Assembly Line A",
-                            OrdinalNumber = 1,
+                            OrdinalNumber = (short)1,
                             Status = 0
                         },
                         new
@@ -364,9 +352,8 @@ namespace CellTracker.Api.Migrations.App
                             Description = "Battery module production",
                             FactoryId = new Guid("11111111-1111-1111-1111-111111111111"),
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Assembly Line B",
-                            OrdinalNumber = 2,
+                            OrdinalNumber = (short)2,
                             Status = 2
                         },
                         new
@@ -376,9 +363,8 @@ namespace CellTracker.Api.Migrations.App
                             Description = "Final packaging and quality control",
                             FactoryId = new Guid("22222222-2222-2222-2222-222222222222"),
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Packaging Line 1",
-                            OrdinalNumber = 1,
+                            OrdinalNumber = (short)1,
                             Status = 1
                         });
                 });
@@ -402,9 +388,6 @@ namespace CellTracker.Api.Migrations.App
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("MqttDeviceId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -414,8 +397,8 @@ namespace CellTracker.Api.Migrations.App
                         .HasMaxLength(35)
                         .HasColumnType("character varying(35)");
 
-                    b.Property<int>("OrdinalNumber")
-                        .HasColumnType("integer");
+                    b.Property<short>("OrdinalNumber")
+                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 
@@ -431,10 +414,9 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Manual soldering station",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MqttDeviceId = "A1",
                             Name = "WS-SLD-01",
-                            OrdinalNumber = 1
+                            OrdinalNumber = (short)1
                         },
                         new
                         {
@@ -443,10 +425,9 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Automated soldering robot arm",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MqttDeviceId = "A2",
                             Name = "WS-SLD-02",
-                            OrdinalNumber = 2
+                            OrdinalNumber = (short)2
                         },
                         new
                         {
@@ -455,10 +436,9 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Visual inspection camera station",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MqttDeviceId = "A3",
                             Name = "WS-INS-01",
-                            OrdinalNumber = 1
+                            OrdinalNumber = (short)1
                         },
                         new
                         {
@@ -467,10 +447,9 @@ namespace CellTracker.Api.Migrations.App
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Box assembly station",
                             IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MqttDeviceId = "A4",
                             Name = "WS-PKG-01",
-                            OrdinalNumber = 1
+                            OrdinalNumber = (short)1
                         });
                 });
 
@@ -489,9 +468,6 @@ namespace CellTracker.Api.Migrations.App
 
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()

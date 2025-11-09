@@ -1,5 +1,5 @@
 ﻿using CellTracker.Api.Models.OperatorTask;
-using CellTracker.Api.Services.Operator;
+using CellTracker.Api.Services.OperatorTaskService;
 using CellTracker.Api.Services.TelemetryRepository;
 
 namespace CellTracker.Api.Endpoint
@@ -19,27 +19,27 @@ namespace CellTracker.Api.Endpoint
 
 
         }
-        public static OperatorTask AddOperatorTask(IOperatorService service, OperatorTask task)
+        public static OperatorTask AddOperatorTask(IOperatorTaskService service, OperatorTask task)
         {
             return service.AddOperatorTask(task);
         }
 
-        public static IQueryable<OperatorTask> GetAllTasks(IOperatorService service)
+        public static IQueryable<OperatorTask> GetAllTasks(IOperatorTaskService service)
         {
             return service.GetAllOperatorTasks();
         }
 
-        public static OperatorTask GetTaskById(IOperatorService service, Guid id)
+        public static OperatorTask GetTaskById(IOperatorTaskService service, Guid id)
         {
             return service.GetOperatorTaskById(id).Result;
         }
 
-        public static void RemoveTaskById(IOperatorService service, Guid id)
+        public static void RemoveTaskById(IOperatorTaskService service, Guid id)
         {
             service.RemoveOperatorTaskById(id);
         }
 
-        public static void UpdateTask(IOperatorService service, OperatorTask task)
+        public static void UpdateTask(IOperatorTaskService service, OperatorTask task)
         {
             service.UpdateOperatorTask(task);
         }

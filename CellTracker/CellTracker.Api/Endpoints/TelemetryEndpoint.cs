@@ -1,6 +1,6 @@
 ﻿using CellTracker.Api.Ingestion.Model;
 using CellTracker.Api.Models.OperatorTask;
-using CellTracker.Api.Services.Operator;
+using CellTracker.Api.Services.OperatorTaskService;
 using CellTracker.Api.Services.TelemetryRepository;
 
 namespace CellTracker.Api.Endpoints
@@ -11,9 +11,12 @@ namespace CellTracker.Api.Endpoints
         {
             var path = $"/{pathPrefix}";
      
-            app.MapGet($"{path}/GetTelemetryData", GetTelemetryData);
+            app.MapGet($"{path}/Between", GetTelemetryDataBetweenAsync);
+            app.MapGet($"{path}/CurrentShift", GetTelemetryDataInCurrentShift);
+            app.MapGet($"{path}/CountCurrentShift", GetTelemetryCountInCurrentShift);
+            app.MapGet($"{path}/CountPerWorkStationCurrentShift", GetTelemetryCountPerWorkStationInCurrentShiftAsync);
         }
-        public async static Task<IResult> GetTelemetryData(ITelemetryFetchService telemetryFetchService, DateTime from, DateTime to)
+        public async static Task<IResult> GetTelemetryDataBetweenAsync(ITelemetryFetchService telemetryFetchService, DateTime from, DateTime to)
         {
             if (from > to)
             {
@@ -21,9 +24,26 @@ namespace CellTracker.Api.Endpoints
                 to = from;
                 from = tmp;
             }
-            var data = await telemetryFetchService.GetTelemetryAsync(from, to);
+            var data = await telemetryFetchService.GetBetweenAsync(from, to);
             return Results.Ok(data);
         }
 
+        public async static Task<IResult> GetTelemetryDataInCurrentShift(ITelemetryFetchService telemetryFetchService, string operatorId, string workStationId)
+        {
+            var data = await telemetryFetchService.GetTelemetryDataInCurrentShiftAsync(operatorId, workStationId);
+            return Results.Ok(data);
+        }
+
+        public async static Task<IResult> GetTelemetryCountInCurrentShift(ITelemetryFetchService telemetryFetchService, string operatorId, string workStationId)
+        {
+            var count = await telemetryFetchService.GetCountInCurrentShiftAsync(operatorId, workStationId);
+            return Results.Ok(count);
+        }
+
+        public async static Task<IResult> GetTelemetryCountPerWorkStationInCurrentShiftAsync(ITelemetryFetchService telemetryFetchService, Guid cellId)
+        {
+            var workStationWithCount = await telemetryFetchService.GetTelemetryCountPerWorkStationInCurrentShiftAsync(cellId);
+            return Results.Ok(workStationWithCount);
+        }
     }
 }

@@ -4,6 +4,10 @@ namespace CellTracker.Api.Services.TelemetryRepository
 {
     public interface ITelemetryFetchService
     {
-        public Task<List<TelemetryData>> GetTelemetryAsync(DateTime from, DateTime to);
+        public Task<List<TelemetryData>> GetBetweenAsync(DateTime from, DateTime to);
+        public Task<List<TelemetryData>> GetTelemetryDataInCurrentShiftAsync(string OperatorId, string WorkStationId);
+        public Task<int> GetCountInCurrentShiftAsync(string OperatorId, string WorkStationId);
+        public Task<Dictionary<string, int>> GetTelemetryCountPerWorkStationInCurrentShiftAsync(Guid cellId);
+        public Task<Dictionary<string, int>> GetTelemetryCountPerProductionLineAsync(Guid productionLineId);
     }
 }

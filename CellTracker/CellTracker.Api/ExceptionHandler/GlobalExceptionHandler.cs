@@ -18,10 +18,7 @@ namespace CellTracker.Api.ExceptionHandler
         }
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, System.Exception exception, CancellationToken cancellationToken)
         {
-            //TODO: I think method name cannot be logged here. Discuss what should be logged.
-            _logger.LogError("",
-                exception.GetType().Name,
-                exception.Message);
+            _logger.LogError(exception.TargetSite.ReflectedType.FullName, exception.GetType().Name, exception.Message);
 
             httpContext.Response.StatusCode = exception switch
             {

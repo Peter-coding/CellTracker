@@ -4,11 +4,15 @@ using CellTracker.Api.Infrastructure.Distributor;
 using CellTracker.Api.Infrastructure.Logging;
 using CellTracker.Api.Infrastructure.UserIdentiy;
 using CellTracker.Api.Ingestion.Queue;
+using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
-using CellTracker.Api.Services.Operator;
+using CellTracker.Api.Services.CellService;
+using CellTracker.Api.Services.FactoryService;
+using CellTracker.Api.Services.OperatorTaskService;
+using CellTracker.Api.Services.ProductionLineService;
 using CellTracker.Api.Services.TelemetryRepository;
-using Microsoft.EntityFrameworkCore;
+using CellTracker.Api.Services.WorkStationService;
 
 namespace CellTracker.Api.Configuration.Extension
 {
@@ -52,9 +56,18 @@ namespace CellTracker.Api.Configuration.Extension
 
             //Add more Repositories later to inject it into UnitOfWork
             builder.Services.AddScoped<IRepository<OperatorTask>, OperatorTaskRepository>();
+            builder.Services.AddScoped<IRepository<Factory>, FactoryRepository>();
+            builder.Services.AddScoped<IRepository<ProductionLine>, ProductionLineRepository>();
+            builder.Services.AddScoped<IRepository<Cell>, CellRepository>();
+            builder.Services.AddScoped<IRepository<WorkStation>, WorkStationRepository>();
 
             // Add service
-            builder.Services.AddScoped<IOperatorService, OperatorService>();
+            builder.Services.AddScoped<IOperatorTaskService, OperatorTaskService>();
+            builder.Services.AddScoped<IFactoryService, FactoryService>();
+            builder.Services.AddScoped<IProductionLineService, ProductionLineService>();
+            builder.Services.AddScoped<ICellService, CellService>();
+            builder.Services.AddScoped<IWorkStationService, WorkStationService>();
+
 
             // Add UnitOfWork pattern
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -1,8 +1,8 @@
 ﻿using CellTracker.Api.Models.OperatorTask;
 
-namespace CellTracker.Api.Services.Operator
+namespace CellTracker.Api.Services.OperatorTaskService
 {
-    public interface IOperatorService
+    public interface IOperatorTaskService
     {
         public OperatorTask AddOperatorTask(OperatorTask task);
         public IQueryable<OperatorTask> GetAllOperatorTasks();

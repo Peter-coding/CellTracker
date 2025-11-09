@@ -3,17 +3,20 @@ using System;
 using CellTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CellTracker.Api.Migrations.App
+namespace CellTracker.Api.App
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109152222_Dtos")]
+    partial class Dtos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,7 +124,7 @@ namespace CellTracker.Api.Migrations.App
                         {
                             Id = "ee6739f0-97e2-496c-8ffe-74a39ae7a8e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7194e626-8170-4aef-9730-b2ca035794f2",
+                            ConcurrencyStamp = "c6ef80fc-c7c4-4aac-96fc-74ea9a8042ab",
                             Email = "test.user@example.com",
                             EmailConfirmed = true,
                             FirstName = "Test",
@@ -139,7 +142,7 @@ namespace CellTracker.Api.Migrations.App
                         {
                             Id = "35031d70-8287-4bfe-bd63-05a816f44885",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "328160e5-ac01-449d-b5ac-c829072a6ec7",
+                            ConcurrencyStamp = "b1a69d46-c6e2-4121-bd53-e6bc0f8dde9e",
                             Email = "test.user1@example.com",
                             EmailConfirmed = true,
                             FirstName = "Test1",

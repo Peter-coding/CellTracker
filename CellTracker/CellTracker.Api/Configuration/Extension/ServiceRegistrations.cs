@@ -11,6 +11,7 @@ using CellTracker.Api.Services.CellService;
 using CellTracker.Api.Services.FactoryService;
 using CellTracker.Api.Services.OperatorTaskService;
 using CellTracker.Api.Services.ProductionLineService;
+using CellTracker.Api.Services.Simulation;
 using CellTracker.Api.Services.TelemetryRepository;
 using CellTracker.Api.Services.WorkStationService;
 
@@ -67,7 +68,7 @@ namespace CellTracker.Api.Configuration.Extension
             builder.Services.AddScoped<IProductionLineService, ProductionLineService>();
             builder.Services.AddScoped<ICellService, CellService>();
             builder.Services.AddScoped<IWorkStationService, WorkStationService>();
-
+            builder.Services.AddScoped<ISimulationService, SimulationService>();
 
             // Add UnitOfWork pattern
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

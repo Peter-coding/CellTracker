@@ -48,7 +48,6 @@ namespace CellTracker.Api.Data
                 SecurityStamp = "ee6739f0-97e2-496c-8ffe-74a39ae7a8e4",
                 PasswordHash = "1111111"
             };
-            //user.PasswordHash = hasher.HashPassword(user, "Test123!");
 
             builder.Entity<SiteUser>().HasData(user);
 

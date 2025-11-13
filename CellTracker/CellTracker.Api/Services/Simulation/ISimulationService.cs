@@ -4,6 +4,6 @@ namespace CellTracker.Api.Services.Simulation
 {
     public interface ISimulationService
     {
-        public void StartSimulation(SimulationParameters parameters);
+        public Task<IResult> StartSimulation(SimulationParameters parameters);
     }
 }

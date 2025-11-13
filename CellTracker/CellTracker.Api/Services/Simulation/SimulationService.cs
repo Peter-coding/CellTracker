@@ -1,9 +1,12 @@
-﻿using CellTracker.Api.Models.Configuration;
+﻿using CellTracker.Api.Ingestion.Model;
+using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Simulation;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.CellService;
 using CellTracker.Api.Services.ProductionLineService;
+using Microsoft.AspNetCore.Http.HttpResults;
 using MQTTnet;
+using System.Text.Json;
 
 namespace CellTracker.Api.Services.Simulation
 {
@@ -23,7 +26,7 @@ namespace CellTracker.Api.Services.Simulation
             _cellService = cellService;
             _mqttOptions = mqttOptions;
         }
-        public async void StartSimulation(SimulationParameters parameters)
+        public async Task<IResult> StartSimulation(SimulationParameters parameters)
         {
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(parameters.ProductionLineId);
 
@@ -50,13 +53,62 @@ namespace CellTracker.Api.Services.Simulation
 
             var factory = new MqttClientFactory();
 
-            var client = factory.CreateMqttClient();
-            //options segítségével csatlakozás
-            //üzenet küldés a megfelelő topicra round robin, megfelelő időközökkel
-            //üzenetbe saját mqttdeviceid, timestamp, workstationid, siker/nem siker
+            var mqttClient = factory.CreateMqttClient();
 
+            await mqttClient.ConnectAsync(_mqttOptions);
 
+            var minutesOfOneProduct = parameters.MinutesOfSimulation / parameters.NumberOfProductsMade;
+            var workStationPeriod = minutesOfOneProduct / workStations.Count();
+            
+            var timer = new PeriodicTimer(TimeSpan.FromMinutes(workStationPeriod));
 
+            var wsMessagesCount = parameters.NumberOfProductsMade * workStations.Count();
+            var currentMessagesCount = 0;
+
+            int currentWorkStationIndex = 0;
+
+            DateTime startTime;
+            if (parameters.Shift == Shift.Morning)
+            {
+                startTime = DateTime.Today.AddHours(6);
+            }
+            else if (parameters.Shift == Shift.Afternoon)
+            {
+                startTime = DateTime.Today.AddHours(14); // 2:00 PM
+            }
+            else
+            {
+                startTime = DateTime.Today.AddHours(22); // 10:00 PM
+            }
+
+            Random rnd = new Random();
+
+            while (currentMessagesCount < wsMessagesCount)
+            {
+                var currentWorkStation = workStations.ElementAt(currentWorkStationIndex);
+                var telemetryData = new TelemetryData
+                {
+                    TimeStamp = startTime.AddMinutes(workStationPeriod),
+                    WorkStationId = workStations.ElementAt(currentMessagesCount % workStations.Count()).Id.ToString(),
+                    IsCompleted = rnd.Next(0, 2) == 1
+                };
+
+                string payload = JsonSerializer.Serialize(telemetryData);
+                var message = new MqttApplicationMessageBuilder()
+                  .WithTopic("telemetry/test")
+                  .WithPayload(payload)
+                  .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+                  .Build();
+
+                await mqttClient.PublishAsync(message);
+                Console.WriteLine("Message sent: ", message.ToString());
+                if (telemetryData.IsCompleted)
+                {
+                    currentMessagesCount++;
+                    currentWorkStationIndex++;
+                }
+            }
+            return Results.Ok();
         }
     }
 }

@@ -12,9 +12,9 @@ namespace CellTracker.Api.Endpoints
             app.MapPost($"{path}/StartSimulation", StartSimulation);
         }
 
-        public static void StartSimulation(ISimulationService simulationService, SimulationParameters parameters)
+        public async static void StartSimulation(ISimulationService simulationService, SimulationParameters parameters)
         {
-            simulationService.StartSimulation(parameters);
+            await simulationService.StartSimulation(parameters);
         }
     }
 }

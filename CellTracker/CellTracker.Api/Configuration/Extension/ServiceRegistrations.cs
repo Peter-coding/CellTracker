@@ -1,4 +1,5 @@
-﻿using CellTracker.Api.Configuration.Redis;
+﻿using CellTracker.Api.Configuration.MqttClient;
+using CellTracker.Api.Configuration.Redis;
 using CellTracker.Api.ExceptionHandler;
 using CellTracker.Api.Infrastructure.Distributor;
 using CellTracker.Api.Infrastructure.Logging;
@@ -48,6 +49,9 @@ namespace CellTracker.Api.Configuration.Extension
 
             // Create logging service
             builder.Services.AddSingleton<ILoggingService, LoggingService>();
+
+            // Add Mqtt Options to set up Mqtt client
+            builder.Services.AddMqttClientOptions(configuration);
 
             // DbContext Registration
             builder.Services.RegisterDbContextExtension();

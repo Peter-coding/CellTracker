@@ -60,7 +60,7 @@ namespace CellTracker.Api.Services.TestMqtt
                         .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
                         .Build();
 
-                    await _mqttClient.PublishAsync(message, stoppingToken);
+                    //await _mqttClient.PublishAsync(message, stoppingToken);
                 }
 
                 var nr = count += num;

@@ -11,11 +11,11 @@ namespace CellTracker.Api.Endpoint
             var path = $"/{pathPrefix}";
 
             //app.MapPost($"{path}/text", function);
-            app.MapPost($"{path}/AddOperatorTask", AddOperatorTask);
-            app.MapGet($"{path}/GetAllOperatorTasks", GetAllTasks);
-            app.MapGet($"{path}/GetTaskById", GetTaskById);
-            app.MapDelete($"{path}/RemoveTaskById", RemoveTaskById);
-            app.MapPut($"{path}/UpdateTask", UpdateTask);
+            app.MapPost($"{path}/Add", AddOperatorTask);
+            app.MapGet($"{path}/GetAll", GetAllTasks);
+            app.MapGet($"{path}/Get", GetTaskById);
+            app.MapDelete($"{path}/Delete", RemoveTaskById);
+            app.MapPut($"{path}/Update", UpdateTask);
 
 
         }

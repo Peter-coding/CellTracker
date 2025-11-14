@@ -12,8 +12,8 @@ namespace CellTracker.Api.Endpoints
 
             app.MapPost($"{path}/Start", StartSimulationAsync);
             app.MapPost($"{path}/Stop", StopSimulationAsync);
-            app.MapGet($"{path}/GetSimulations", GetAllSimulationsAsync);
-            app.MapGet($"{path}/GetSimulationById", GetSimulationByIdAsync);
+            app.MapGet($"{path}/GetAll", GetAllSimulationsAsync);
+            app.MapGet($"{path}/Get", GetSimulationByIdAsync);
             app.MapPost($"{path}/Add", AddSimulationAsync);
             app.MapDelete($"{path}/Delete", DeleteSimulationByIdAsync);
             app.MapPut($"{path}/Update", UpdateSimulationAsync);

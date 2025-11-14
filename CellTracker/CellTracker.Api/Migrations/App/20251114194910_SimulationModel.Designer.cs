@@ -3,17 +3,20 @@ using System;
 using CellTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CellTracker.Api.Migrations.App
+namespace CellTracker.Api.App
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251114194910_SimulationModel")]
+    partial class SimulationModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,7 +124,7 @@ namespace CellTracker.Api.Migrations.App
                         {
                             Id = "ee6739f0-97e2-496c-8ffe-74a39ae7a8e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "de329117-5055-40cb-a42b-8d416f469625",
+                            ConcurrencyStamp = "2b8838ca-5d64-49b8-8531-8f2add1237e8",
                             Email = "test.user@example.com",
                             EmailConfirmed = true,
                             FirstName = "Test",
@@ -139,7 +142,7 @@ namespace CellTracker.Api.Migrations.App
                         {
                             Id = "35031d70-8287-4bfe-bd63-05a816f44885",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a4976a46-79d5-40ab-9af6-e2458b401c7d",
+                            ConcurrencyStamp = "66a4f693-00f2-4812-880a-7ced3ffa8e21",
                             Email = "test.user1@example.com",
                             EmailConfirmed = true,
                             FirstName = "Test1",
@@ -534,8 +537,6 @@ namespace CellTracker.Api.Migrations.App
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductionLineId");
-
                     b.ToTable("Simulations", "cell_tracker");
                 });
 
@@ -581,17 +582,6 @@ namespace CellTracker.Api.Migrations.App
                         .IsRequired();
 
                     b.Navigation("Cell");
-                });
-
-            modelBuilder.Entity("CellTracker.Api.Models.Simulation.SimulationModel", b =>
-                {
-                    b.HasOne("CellTracker.Api.Models.Configuration.ProductionLine", "ProductionLine")
-                        .WithMany()
-                        .HasForeignKey("ProductionLineId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProductionLine");
                 });
 
             modelBuilder.Entity("CellTracker.Api.Models.Configuration.Cell", b =>

@@ -45,7 +45,7 @@ namespace CellTracker.Api
             //Turning on for our own GlobalExceptionHandler
             app.UseExceptionHandler();
 
-            app.MapOperatorEndpoint("operator");
+            app.MapOperatorEndpoint("operatorTask");
             app.MapTelemetryEndpoint("telemetry");
             app.MapFactoryConfiguratorEndpoint("factoryConfigurator");
             app.MapSimulationEndpoint("simulation");

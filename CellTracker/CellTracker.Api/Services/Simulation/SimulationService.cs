@@ -31,6 +31,7 @@ namespace CellTracker.Api.Services.Simulation
         }
         public async Task<IResult> StartSimulation(CreateSimulationDto parameters)
         {
+            //ProdLine which is used for simulation
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(parameters.ProductionLineId);
 
             if (productionLine == null)
@@ -38,8 +39,10 @@ namespace CellTracker.Api.Services.Simulation
                 throw new ArgumentException($"Production line with ID {parameters.ProductionLineId} not found.");
             }
 
+            //Cells of ProdLine
             var cells = await _productionLineService.GetCellsInProdLine(parameters.ProductionLineId);
 
+            //Ordered for simulation
             var orderedCells = cells.OrderBy(c => c.OrdinalNumber).ToList();
 
             List<WorkStation> workStations = [];
@@ -48,28 +51,34 @@ namespace CellTracker.Api.Services.Simulation
                 var ws = await _cellService.GetWorkStationsOfCellAsync(cell.Id);
                 if (ws != null)
                 {
+                    //WorkStations for simulation ordered by OrdinalNumber but ordered only within a cell
                     workStations.AddRange(ws.OrderBy(w => w.OrdinalNumber));
                 }
             }
 
-            List<IMqttClient> mqttClients = [];
-
             var factory = new MqttClientFactory();
 
+            //Client to send the messages
             var mqttClient = factory.CreateMqttClient();
 
-            await mqttClient.ConnectAsync(_mqttOptions);
-
+            //How much time it takes to make a product
             var minutesOfOneProduct = (double)parameters.MinutesOfSimulation / parameters.NumberOfProductsMade;
+            //Time each workstation has to process a product
             var workStationPeriod = (double)minutesOfOneProduct / workStations.Count();
 
+            //Timer to simulate work speed. Each tick represents the time a workstation has to process a product
             var timer = new PeriodicTimer(TimeSpan.FromMinutes(workStationPeriod));
 
+            //All messages that will be sent during the simulation
             var wsMessagesCount = parameters.NumberOfProductsMade * workStations.Count();
-            var currentMessagesCount = 0;
 
+            //Ofc starting with zero
+            int currentMessagesCount = 0;
+
+            //Index of current workstation that is processing a product. It's like round robin. Each WS is used once per product
             int currentWorkStationIndex = 0;
 
+            //Deciding which shift the simulation is for. It's the starting time.
             DateTime startTime;
             if (parameters.Shift == Shift.Morning)
             {
@@ -84,26 +93,32 @@ namespace CellTracker.Api.Services.Simulation
                 startTime = DateTime.Today.AddHours(22); // 10:00 PM
             }
 
+            //Just for undefined values
             Random rnd = new Random();
 
+            //Calculating how much time each message represents within an 8 hour shift
             var shiftLength = TimeSpan.FromHours(8);
             var interval = TimeSpan.FromTicks(shiftLength.Ticks / wsMessagesCount);
 
+            //Sending messages in a loop until all messages are sent
             while (currentMessagesCount < wsMessagesCount)
             {
-                if(currentWorkStationIndex >= workStations.Count())
+                //If all workstations have processed the current product, start again from the first workstation
+                if (currentWorkStationIndex >= workStations.Count())
                 {
                     currentWorkStationIndex = 0;
                 } 
                 
                 await timer.WaitForNextTickAsync();
 
+                //WorkStation which will send data
                 var currentWorkStation = workStations.ElementAt(currentWorkStationIndex);
+                //Data that the WS will send
                 var telemetryData = new TelemetryData
                 {
                     TimeStamp = startTime + interval * currentMessagesCount,
                     WorkStationId = workStations.ElementAt(currentWorkStationIndex).Id.ToString(),
-                    IsCompleted = rnd.Next(0, 2) == 1,
+                    IsCompleted = rnd.Next(0, 100) >= 97,
                     Error = 0,     
                     //TODO: Is this needed?
                     OperatorId = $"OP-{rnd.Next(100, 999)}", 
@@ -111,6 +126,7 @@ namespace CellTracker.Api.Services.Simulation
 
                 };
 
+                //Creating MQTT message
                 string payload = JsonSerializer.Serialize(telemetryData);
                 var message = new MqttApplicationMessageBuilder()
                   .WithTopic("telemetry/test")
@@ -118,12 +134,15 @@ namespace CellTracker.Api.Services.Simulation
                   .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
                   .Build();
 
+                //Connecting to MQTT broker
                 while (!mqttClient.IsConnected)
                 {
                     await mqttClient.ConnectAsync(_mqttOptions);
                 }
-                    await mqttClient.PublishAsync(message);
-                Console.WriteLine("Message sent: ", message.Payload.ToString());
+                //Sending MQTT message
+                await mqttClient.PublishAsync(message);
+
+                //If the product is completed (no error), next WS is used.
                 if (telemetryData.IsCompleted)
                 {
                     currentMessagesCount++;

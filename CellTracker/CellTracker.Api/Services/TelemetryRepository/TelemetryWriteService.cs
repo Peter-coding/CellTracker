@@ -44,6 +44,7 @@ namespace CellTracker.Api.Services.TelemetryRepository
                 Environment.GetEnvironmentVariable("INFLUXDB_BUCKET"), Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
         }
 
+        //TODO: Deleting InfluxDB data for testin purposes. Later can be deleted.
         public async Task<IResult> DeleteAllTelemetryData()
         {
             //delete all telemetry data

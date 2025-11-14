@@ -7,6 +7,7 @@ using CellTracker.Api.Infrastructure.UserIdentiy;
 using CellTracker.Api.Ingestion.Queue;
 using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.OperatorTask;
+using CellTracker.Api.Models.Simulation;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.CellService;
 using CellTracker.Api.Services.FactoryService;
@@ -65,6 +66,7 @@ namespace CellTracker.Api.Configuration.Extension
             builder.Services.AddScoped<IRepository<ProductionLine>, ProductionLineRepository>();
             builder.Services.AddScoped<IRepository<Cell>, CellRepository>();
             builder.Services.AddScoped<IRepository<WorkStation>, WorkStationRepository>();
+            builder.Services.AddScoped<IRepository<SimulationModel>, SimulationRepository>();
 
             // Add service
             builder.Services.AddScoped<IOperatorTaskService, OperatorTaskService>();

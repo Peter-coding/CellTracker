@@ -1,6 +1,7 @@
 ﻿using CellTracker.Api.Data;
 using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.OperatorTask;
+using CellTracker.Api.Models.Simulation;
 
 namespace CellTracker.Api.Repositories
 {
@@ -12,6 +13,7 @@ namespace CellTracker.Api.Repositories
         public IRepository<ProductionLine> ProductionLineRepository { get; }
         public IRepository<Cell> CellRepository { get; }
         public IRepository<WorkStation> WorkStationRepository { get; }
+        public IRepository<SimulationModel> SimulationRepository { get; }
         //Add here the new repositories later
 
         public UnitOfWork(AppDbContext dbContext,
@@ -19,7 +21,8 @@ namespace CellTracker.Api.Repositories
             IRepository<Factory> factoryRepository,
             IRepository<ProductionLine> productionLineRepository,
             IRepository<Cell> cellRepository,
-            IRepository<WorkStation> workStationRepository
+            IRepository<WorkStation> workStationRepository,
+            IRepository<SimulationModel> simulationRepository
             )
         {
             _dbContext = dbContext;
@@ -28,6 +31,7 @@ namespace CellTracker.Api.Repositories
             ProductionLineRepository = productionLineRepository;
             CellRepository = cellRepository;
             WorkStationRepository = workStationRepository;
+            SimulationRepository = simulationRepository;
         }
 
         public async Task<int> CompleteAsync()

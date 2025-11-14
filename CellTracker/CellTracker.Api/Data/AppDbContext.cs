@@ -1,6 +1,7 @@
 ﻿using CellTracker.Api.Auth;
 using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.OperatorTask;
+using CellTracker.Api.Models.Simulation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
@@ -20,6 +21,7 @@ namespace CellTracker.Api.Data
         public DbSet<ProductionLine> ProductionLines { get; set; }
         public DbSet<Cell> Cells { get; set; }
         public DbSet<WorkStation> WorkStations { get; set; }
+        public DbSet<SimulationModel> Simulations { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -59,17 +59,17 @@ namespace CellTracker.Api.Services.CellService
             }
             _unitOfWork.CellRepository.RemoveById(id);
             var count = await _unitOfWork.CompleteAsync();
-            if (count == 0)
-            {
-                return false;
-            }
-
-            return true;
+            return count > 0;
         }
 
         public async Task<Cell> UpdateCell(UpdateCellDto cellDto)
         {
             var cell = await _unitOfWork.CellRepository.GetByIdAsync(cellDto.Id);
+
+            if(cell == null)
+            {
+                throw new ArgumentException("Cell not found");
+            }
 
             //TODO add automapper
             cell.Name = cellDto.Name;

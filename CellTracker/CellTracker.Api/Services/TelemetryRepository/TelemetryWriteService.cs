@@ -44,16 +44,18 @@ namespace CellTracker.Api.Services.TelemetryRepository
                 Environment.GetEnvironmentVariable("INFLUXDB_BUCKET"), Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
         }
 
-        public void DeleteAllTelemetryData()
+        public async Task<IResult> DeleteAllTelemetryData()
         {
             //delete all telemetry data
             var deleteApi = _influxDBClient.GetDeleteApi();
             var start = DateTime.UtcNow.AddYears(-10);
             var stop = DateTime.UtcNow;
-            deleteApi.Delete(start, stop,
+            await deleteApi.Delete(start, stop,
                 "_measurement=\"Telemetry\"",
                 Environment.GetEnvironmentVariable("INFLUXDB_BUCKET"),
                 Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
+
+            return Results.Ok();
         }
     }
 }

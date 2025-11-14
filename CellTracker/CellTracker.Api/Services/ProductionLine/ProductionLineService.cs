@@ -126,7 +126,5 @@ namespace CellTracker.Api.Services.ProductionLineService
             }
             return factory.ProductionLines.Max(pl => pl.OrdinalNumber) + 1;
         }
-
-
     }
 }

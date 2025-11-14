@@ -4,6 +4,7 @@ using CellTracker.Api.Ingestion.Queue;
 using MQTTnet;
 using MQTTnet.Server;
 using System.Text;
+using System.Text.Json;
 
 namespace CellTracker.Api.WorkerService.Ingestion
 {
@@ -40,12 +41,7 @@ namespace CellTracker.Api.WorkerService.Ingestion
                 string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                 //Console.WriteLine($"#Üzenet érkezett - Topic: {topic}, Tartalom: {payload}");
 
-                var telemetry = new TelemetryData
-                {
-                    OperatorId = topic,
-                    WorkStationId = payload,
-                    TimeStamp = DateTime.UtcNow,
-                };
+                TelemetryData telemetry = JsonSerializer.Deserialize<TelemetryData>(payload);
 
                 // Add message to queue
                 await _queue.EnqueueAsync(_rawQueueKey, telemetry, stoppingToken);

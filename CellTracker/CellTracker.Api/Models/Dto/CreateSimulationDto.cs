@@ -1,15 +1,12 @@
-﻿namespace CellTracker.Api.Models.Simulation
+﻿using CellTracker.Api.Models.Simulation;
+
+namespace CellTracker.Api.Models.Dto
 {
-    public class SimulationParameters
+    public class CreateSimulationDto
     {
         public Shift Shift { get; set; }
         public int NumberOfProductsMade { get; set; }
         public int MinutesOfSimulation { get; set; }
         public Guid ProductionLineId { get; set; }
-    }
-
-    public enum Shift
-    {
-        Morning, Afternoon, Night
     }
 }

@@ -6,6 +6,6 @@ namespace CellTracker.Api.Services.TelemetryRepository
     {
         public void SaveTelemetryAsync(TelemetryData telemetryData);
         public void SaveTelemetryBatchAsync(CancellationToken cancellationToken);
-        public void DeleteAllTelemetryData();
+        public Task<IResult> DeleteAllTelemetryData();
     }
 }

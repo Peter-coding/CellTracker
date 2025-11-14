@@ -27,7 +27,7 @@ namespace CellTracker.Api.Endpoints
             app.MapPut($"{path}/ProductionLine", UpdateProductionLineAsync);
             app.MapDelete($"{path}/ProductionLine", DeleteProductionLineAsync);
             app.MapPut($"{path}/SetProdLineStatus", SetProdLineStatus);
-            app.MapPut($"{path}/CellsInProdLine", GetCellsInProdLine);
+            app.MapGet($"{path}/CellsInProdLine", GetCellsInProdLine);
 
             app.MapPost($"{path}/CreateWorkStation", CreateWorkStationAsync);
             app.MapGet($"{path}/WorkStationById", GetWorkStationByIdAsync);
@@ -86,7 +86,7 @@ namespace CellTracker.Api.Endpoints
         public async static Task<IResult> DeleteFactoryAsync(IFactoryService factoryService, Guid factoryId)
         {
             var result = await factoryService.RemoveFactoryById(factoryId);
-            if (result == true)
+            if (result)
             {
                 return Results.Ok();
             }

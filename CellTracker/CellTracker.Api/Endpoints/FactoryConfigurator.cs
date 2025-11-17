@@ -36,7 +36,7 @@ namespace CellTracker.Api.Endpoints
             app.MapDelete($"{path}/workStation/Delete", DeleteWorkStationAsync);
 
             app.MapPost($"{path}/cell/Add", CreateCellAsync);
-            app.MapGet($"{path}/cell/GetCell", GetCellByIdAsync);
+            app.MapGet($"{path}/cell/Get", GetCellByIdAsync);
             app.MapGet($"{path}/cell/GetAll", GetAllCells);
             app.MapPut($"{path}/cell/Update", UpdateCellAsync);
             app.MapDelete($"{path}/cell/Delete", DeleteCellAsync);

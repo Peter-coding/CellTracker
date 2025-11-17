@@ -39,7 +39,7 @@ namespace CellTracker.MqttIngestion.Configuration.Extension
             (this IServiceCollection services)
         {
             // Test BackgroundService which sends telemetry data for Broker for testing purposes
-            services.AddHostedService<TestMqttService>();
+            //services.AddHostedService<TestMqttService>();
             // MqttClient which ingests the data
             services.AddHostedService<TelemetryIngestionService>();
             // Telemetry processor service

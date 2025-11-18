@@ -16,31 +16,31 @@ namespace CellTracker.Api.Endpoints
             var path = $"/{pathPrefix}";
 
             app.MapPost($"{path}/Factory/Add", CreateFactoryAsync);
-            app.MapGet($"{path}/Factory/Get", GetFactoryByIdAsync);
+            app.MapGet($"{path}/Factory/Get/{{factoryId}}", GetFactoryByIdAsync);
             app.MapGet($"{path}/Factory/GetAll", GetAllFactories);
             app.MapPut($"{path}/Factory/Update", UpdateFactoryAsync);
-            app.MapDelete($"{path}/Factory/Delete", DeleteFactoryAsync);
+            app.MapDelete($"{path}/Factory/Delete/{{factoryId}}", DeleteFactoryAsync);
 
             app.MapPost($"{path}/ProdLine/Add", CreateProductionLineAsync);
-            app.MapGet($"{path}/ProdLine/Get", GetProductionLineByIdAsync);
+            app.MapGet($"{path}/ProdLine/Get/{{productionLineId}}", GetProductionLineByIdAsync);
             app.MapGet($"{path}/ProdLine/GetAll", GetAllProductionLines);
             app.MapPut($"{path}/ProdLine/Update", UpdateProductionLineAsync);
-            app.MapDelete($"{path}/ProdLine/Delete", DeleteProductionLineAsync);
+            app.MapDelete($"{path}/ProdLine/Delete/{{productionLineId}}", DeleteProductionLineAsync);
             app.MapPut($"{path}/ProdLine/SetProdLineStatus", SetProdLineStatus);
-            app.MapGet($"{path}/ProdLine/CellsInProdLine", GetCellsInProdLine);
+            app.MapGet($"{path}/ProdLine/CellsInProdLine/{{productionLineId}}", GetCellsInProdLine);
 
             app.MapPost($"{path}/WorkStation/Add", CreateWorkStationAsync);
-            app.MapGet($"{path}/WorkStation/Get", GetWorkStationByIdAsync);
+            app.MapGet($"{path}/WorkStation/Get/{{workStationId}}", GetWorkStationByIdAsync);
             app.MapGet($"{path}/WorkStation/GetAll", GetAllWorkStations);
             app.MapPut($"{path}/WorkStation/Update", UpdateWorkStationAsync);
-            app.MapDelete($"{path}/WorkStation/Delete", DeleteWorkStationAsync);
+            app.MapDelete($"{path}/WorkStation/Delete/{{workStationId}}", DeleteWorkStationAsync);
 
             app.MapPost($"{path}/Cell/Add", CreateCellAsync);
-            app.MapGet($"{path}/Cell/Get", GetCellByIdAsync);
+            app.MapGet($"{path}/Cell/Get/{{cellId}}", GetCellByIdAsync);
             app.MapGet($"{path}/Cell/GetAll", GetAllCells);
             app.MapPut($"{path}/Cell/Update", UpdateCellAsync);
-            app.MapDelete($"{path}/Cell/Delete", DeleteCellAsync);
-            app.MapGet($"{path}/Cell/WorkStationsInCell", GetWorkStationsInCell);
+            app.MapDelete($"{path}/Cell/Delete/{{cellId}}", DeleteCellAsync);
+            app.MapGet($"{path}/Cell/WorkStationsInCell/{{cellId}}", GetWorkStationsInCell);
         }
 
         public async static Task<IResult> CreateFactoryAsync(IFactoryService factoryService, CreateFactoryDto factoryDto)

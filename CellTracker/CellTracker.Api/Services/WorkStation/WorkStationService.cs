@@ -24,6 +24,7 @@ namespace CellTracker.Api.Services.WorkStationService
 
             WorkStation workStation = new WorkStation
             {
+                MqttDeviceId = workStationDto.MqttDeviceId,
                 Name = workStationDto.Name,
                 Description = workStationDto.Description,
                 CellId = workStationDto.CellId,
@@ -42,7 +43,7 @@ namespace CellTracker.Api.Services.WorkStationService
 
         public async Task<IEnumerable<WorkStation>> GetAllWorkStations()
         {
-            return await _unitOfWork.WorkStationRepository.GetAll().ToListAsync();
+            return await _unitOfWork.WorkStationRepository.GetAll().Where(workStation => workStation.IsDeleted != true).ToListAsync();
         }
 
         public async Task<WorkStation> GetWorkStationById(Guid id)

@@ -38,7 +38,7 @@ namespace CellTracker.Api.Services.FactoryService
 
         public async Task<IEnumerable<Factory>> GetAllFactories()
         {
-            return await _unitOfWork.FactoryRepository.GetAll().ToListAsync();
+            return await _unitOfWork.FactoryRepository.GetAll().Where(factory => factory.IsDeleted != true).ToListAsync();
         }
 
         public async Task<Factory> GetFactoryById(Guid id)

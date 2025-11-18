@@ -40,7 +40,7 @@ namespace CellTracker.Api.Services.ProductionLineService
 
         public async Task<IEnumerable<ProductionLine>> GetAllProductionLines()
         {
-            return await _unitOfWork.ProductionLineRepository.GetAll().ToListAsync();
+            return await _unitOfWork.ProductionLineRepository.GetAll().Where(line => line.IsDeleted != true).ToListAsync();
         }
 
         public async Task<ProductionLine> GetProductionLineById(Guid id)

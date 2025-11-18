@@ -42,7 +42,7 @@ namespace CellTracker.Api.Services.CellService
 
         public async Task<IEnumerable<Cell>> GetAllCells()
         {
-            return await _unitOfWork.CellRepository.GetAll().ToListAsync();
+            return await _unitOfWork.CellRepository.GetAll().Where(cell => cell.IsDeleted != true).ToListAsync();
         }
 
         public async Task<Cell> GetCellById(Guid id)
@@ -96,7 +96,7 @@ namespace CellTracker.Api.Services.CellService
             {
                 throw new ArgumentException("Cell not found");
             }
-            return _unitOfWork.WorkStationRepository.GetAll().Where(ws => ws.CellId == id).ToList();
+            return _unitOfWork.WorkStationRepository.GetAll().Where(ws => ws.CellId == id && ws.IsDeleted != true).ToList();
         }
         private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
         {

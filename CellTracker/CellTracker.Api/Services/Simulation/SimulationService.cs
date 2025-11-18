@@ -186,7 +186,7 @@ namespace CellTracker.Api.Services.Simulation
 
         public async Task<IEnumerable<SimulationModel>> GetAllSimulations()
         {
-            return await _unitOfWork.SimulationRepository.GetAll().ToListAsync();
+            return await _unitOfWork.SimulationRepository.GetAll().Where(simulation => simulation.IsDeleted != true).ToListAsync();
         }
 
         public async Task<SimulationModel> GetSimulationById(Guid id)

@@ -94,11 +94,15 @@ namespace CellTracker.Api.Services.WorkStationService
         private async Task<int> GetNextOrdinalNumberForWorkStation(Guid cellId)
         {
             var cell = await _unitOfWork.CellRepository.GetByIdAsync(cellId);
-            if (cell != null && !cell.WorkStations.Any())
+            var workStations = await _unitOfWork.WorkStationRepository.GetAll()
+                .Where(ws => ws.CellId == cellId).ToListAsync();
+
+            if (cell != null && !workStations.Any())
             {
                 return 1;
             }
-            return cell!.WorkStations.Max(ws => ws.OrdinalNumber) + 1;
+
+            return workStations.Max(ws => ws.OrdinalNumber) + 1;
         }
     }
 }

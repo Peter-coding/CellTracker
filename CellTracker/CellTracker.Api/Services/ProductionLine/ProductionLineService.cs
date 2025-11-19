@@ -120,11 +120,18 @@ namespace CellTracker.Api.Services.ProductionLineService
         private async Task<int> GetNextOrdinalNumberForProdLineInFactory(Guid factoryId)
         {
             var factory = await _unitOfWork.FactoryRepository.GetByIdAsync(factoryId);
-            if (factory != null && !factory.ProductionLines.Any())
+
+            var prodLines = await _unitOfWork.ProductionLineRepository.GetAll()
+                .Where(pl => pl.FactoryId == factoryId)
+                .ToListAsync();
+
+            if (factory != null && !prodLines.Any())
             {
                 return 1;
             }
-            return factory.ProductionLines.Max(pl => pl.OrdinalNumber) + 1;
+
+            return prodLines.Max(pl => pl.OrdinalNumber) + 1;
         }
+
     }
 }

@@ -101,11 +101,15 @@ namespace CellTracker.Api.Services.CellService
         private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
         {
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);
-            if (productionLine != null && !productionLine.Cells.Any())
+            var cells = await _unitOfWork.CellRepository.GetAll()
+                .Where(c => c.ProductionLineId == productionLineId)
+                .ToListAsync();
+
+            if (productionLine != null && !cells.Any())
             {
                 return 1;
             }
-            return productionLine.Cells.Max(c => c.OrdinalNumber) + 1;
+            return cells.Max(c => c.OrdinalNumber) + 1;
         }
     }
 }

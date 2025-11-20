@@ -59,12 +59,20 @@ namespace CellTracker.Api.Services.TelemetryRepository
             var currentTime = DateTime.UtcNow;
             var shiftStart = GetCurrentShiftStart(currentTime);
 
+            //string query = $@"
+            //    from(bucket: ""CellTracker"")
+            //        |> range(start: {shiftStart:yyyy-MM-ddTHH:mm:ssZ}, stop: {currentTime:yyyy-MM-ddTHH:mm:ssZ})
+            //        |> filter(fn: (r) => r._measurement == ""Telemetry"")
+            //        |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
+            //        |> filter(fn: (r) => r.OperatorId == ""{operatorId}"" and r.WorkStationId == ""{workStationId}"")
+            //    ";
+
             string query = $@"
                 from(bucket: ""CellTracker"")
                     |> range(start: {shiftStart:yyyy-MM-ddTHH:mm:ssZ}, stop: {currentTime:yyyy-MM-ddTHH:mm:ssZ})
                     |> filter(fn: (r) => r._measurement == ""Telemetry"")
                     |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
-                    |> filter(fn: (r) => r.OperatorId == ""{operatorId}"" and r.WorkStationId == ""{workStationId}"")
+                    |> filter(fn: (r) => r.WorkStationId == ""{workStationId}"")
                 ";
 
             return await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));

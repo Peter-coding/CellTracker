@@ -118,7 +118,7 @@ namespace CellTracker.Api.Services.Simulation
                 {
                     TimeStamp = startTime + interval * currentMessagesCount,
                     WorkStationId = workStations.ElementAt(currentWorkStationIndex).Id.ToString(),
-                    IsCompleted = rnd.Next(0, 100) >= 97,
+                    IsCompleted = true,
                     Error = 0,     
                     //TODO: Is this needed?
                     OperatorId = $"OP-{rnd.Next(100, 999)}", 
@@ -141,6 +141,8 @@ namespace CellTracker.Api.Services.Simulation
                 }
                 //Sending MQTT message
                 await mqttClient.PublishAsync(message);
+
+                Console.WriteLine("currentMessagesCount: " + currentMessagesCount + " ------- " + currentWorkStationIndex + " ------- " + telemetryData.WorkStationId);
 
                 //If the product is completed (no error), next WS is used.
                 if (telemetryData.IsCompleted)

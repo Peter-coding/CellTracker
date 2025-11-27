@@ -1,4 +1,5 @@
-﻿using CellTracker.Api.Models.OperatorTask;
+﻿using CellTracker.Api.Models.Dto;
+using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Repositories;
 
 namespace CellTracker.Api.Services.OperatorTaskService
@@ -12,11 +13,23 @@ namespace CellTracker.Api.Services.OperatorTaskService
             _unitOfWork = unitOfWork;
             
         }
-        public OperatorTask AddOperatorTask(OperatorTask task)
+        public async Task<OperatorTask> AddOperatorTask(CreateOperatorTaskDto taskDto)
         {
-            _unitOfWork.OperatorTaskRepository.Add(task);
-            _unitOfWork.CompleteAsync();
-            return task;
+            OperatorTask operatorTask = new OperatorTask
+            {
+                Name = taskDto.Name,
+                Description = taskDto.Description,
+                QuantityGoal = taskDto.QuantityGoal,
+                WorkStationId = taskDto.WorkStationId,
+                CreatedAt = DateTime.UtcNow
+            };
+            _unitOfWork.OperatorTaskRepository.Add(operatorTask);
+            var count = await _unitOfWork.CompleteAsync();
+            if (count == 0)
+            {
+                return null;
+            }
+            return operatorTask;
         }
 
         public IQueryable<OperatorTask> GetAllOperatorTasks()

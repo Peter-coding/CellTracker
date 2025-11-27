@@ -1,6 +1,7 @@
 ﻿using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Repositories;
+using CellTracker.Api.Services.CellService;
 using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Services.ProductionLineService
@@ -8,9 +9,12 @@ namespace CellTracker.Api.Services.ProductionLineService
     public class ProductionLineService : IProductionLineService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ProductionLineService(IUnitOfWork unitOfWork)
+        private readonly ICellService _cellService;
+
+        public ProductionLineService(IUnitOfWork unitOfWork, ICellService cellService)
         {
             _unitOfWork = unitOfWork;
+            _cellService = cellService;
         }
 
         public async Task<ProductionLine> AddProductionLine(CreateProductionLineDto productionLineDto)
@@ -115,6 +119,37 @@ namespace CellTracker.Api.Services.ProductionLineService
                 .Where(c => c.ProductionLineId == id)
                 .ToListAsync();
             return cells;
+        }
+
+        public async Task<int> GetQuantityGoalInProdLine(Guid id)
+        {
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
+            if (productionLine == null)
+            {
+                throw new ArgumentException("Production Line not found");
+            }
+
+            var cells = await GetCellsInProdLine(id);
+
+           
+            List<WorkStation> workStations = new List<WorkStation>();
+
+            foreach (var cell in cells)
+            {
+                var ws = await _cellService.GetWorkStationsOfCellAsync(cell.Id);
+                workStations.AddRange(ws);
+            }
+
+            int quantityGoal = 0;
+            foreach (var ws in workStations)
+            {
+                if(ws.OperatorTask != null)
+                {
+                    quantityGoal += ws.OperatorTask.QuantityGoal;
+                }
+            }
+
+            return quantityGoal;
         }
 
         private async Task<int> GetNextOrdinalNumberForProdLineInFactory(Guid factoryId)

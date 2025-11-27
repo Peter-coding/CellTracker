@@ -40,7 +40,9 @@ namespace CellTracker.Api.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // --- Seed Factory, ProductionLine, Cell, WorkStation ---
+            // --- Seed Factory, ProductionLine, Cell, WorkStation, OperatorTask ---
+
+
 
             var factory1Id = Guid.Parse("11111111-1111-1111-1111-111111111111");
             var factory2Id = Guid.Parse("22222222-2222-2222-2222-222222222222");
@@ -101,14 +103,14 @@ namespace CellTracker.Api.Data
             var line9Id = Guid.Parse("bbbbbbbb-aaaa-bbbb-cccc-222222222222");
 
             builder.Entity<ProductionLine>().HasData(
-                new ProductionLine { Id = line1Id, Name = "Assembly Line A", OrdinalNumber = 1, Description = "Automotive ECU assembly line", FactoryId = factory1Id, Status = ProductionLineStatus.Running }, 
-                new ProductionLine { Id = line2Id, Name = "Assembly Line B", OrdinalNumber = 2, Description = "Battery module production", FactoryId = factory1Id, Status = ProductionLineStatus.Maintenance }, 
-                new ProductionLine { Id = line3Id, Name = "Packaging Line 1", OrdinalNumber = 3, Description = "Final packaging and quality control", FactoryId = factory2Id, Status = ProductionLineStatus.Stopped }, 
-                new ProductionLine { Id = line4Id, Name = "PCB Line 1", OrdinalNumber = 4, Description = "Motherboard soldering and assembly", FactoryId = factory3Id, Status = ProductionLineStatus.Running }, 
-                new ProductionLine { Id = line5Id, Name = "PCB Line 2", OrdinalNumber = 5, Description = "High-density PCB assembly", FactoryId = factory3Id, Status = ProductionLineStatus.Maintenance }, 
-                new ProductionLine { Id = line6Id, Name = "Final Assembly Line", OrdinalNumber = 6, Description = "Electronic unit final assembly", FactoryId = factory3Id, Status = ProductionLineStatus.Running }, 
-                new ProductionLine { Id = line7Id, Name = "Automation Line 1", OrdinalNumber = 7, Description = "Industrial robot assembly", FactoryId = factory4Id, Status = ProductionLineStatus.Stopped }, 
-                new ProductionLine { Id = line8Id, Name = "Automation Line 2", OrdinalNumber = 8, Description = "Robot calibration and testing line", FactoryId = factory4Id, Status = ProductionLineStatus.Running }, 
+                new ProductionLine { Id = line1Id, Name = "Assembly Line A", OrdinalNumber = 1, Description = "Automotive ECU assembly line", FactoryId = factory1Id, Status = ProductionLineStatus.Running },
+                new ProductionLine { Id = line2Id, Name = "Assembly Line B", OrdinalNumber = 2, Description = "Battery module production", FactoryId = factory1Id, Status = ProductionLineStatus.Maintenance },
+                new ProductionLine { Id = line3Id, Name = "Packaging Line 1", OrdinalNumber = 3, Description = "Final packaging and quality control", FactoryId = factory2Id, Status = ProductionLineStatus.Stopped },
+                new ProductionLine { Id = line4Id, Name = "PCB Line 1", OrdinalNumber = 4, Description = "Motherboard soldering and assembly", FactoryId = factory3Id, Status = ProductionLineStatus.Running },
+                new ProductionLine { Id = line5Id, Name = "PCB Line 2", OrdinalNumber = 5, Description = "High-density PCB assembly", FactoryId = factory3Id, Status = ProductionLineStatus.Maintenance },
+                new ProductionLine { Id = line6Id, Name = "Final Assembly Line", OrdinalNumber = 6, Description = "Electronic unit final assembly", FactoryId = factory3Id, Status = ProductionLineStatus.Running },
+                new ProductionLine { Id = line7Id, Name = "Automation Line 1", OrdinalNumber = 7, Description = "Industrial robot assembly", FactoryId = factory4Id, Status = ProductionLineStatus.Stopped },
+                new ProductionLine { Id = line8Id, Name = "Automation Line 2", OrdinalNumber = 8, Description = "Robot calibration and testing line", FactoryId = factory4Id, Status = ProductionLineStatus.Running },
                 new ProductionLine { Id = line9Id, Name = "Automation Line 3", OrdinalNumber = 9, Description = "AGV control unit production", FactoryId = factory4Id, Status = ProductionLineStatus.Maintenance }
             );
 
@@ -182,7 +184,7 @@ namespace CellTracker.Api.Data
 
                 new Cell { Id = autoCell7, Name = "AGV Control Board", OrdinalNumber = 1, Description = "PCB assembly", ProductionLineId = line9Id },
                 new Cell { Id = autoCell8, Name = "Lidar Install", OrdinalNumber = 2, Description = "Sensors installation", ProductionLineId = line9Id },
-                new Cell { Id = autoCell9, Name = "Navigation Test", OrdinalNumber = 3, Description = "AGV nav calibration", ProductionLineId = line9Id }   
+                new Cell { Id = autoCell9, Name = "Navigation Test", OrdinalNumber = 3, Description = "AGV nav calibration", ProductionLineId = line9Id }
             );
 
             builder.Entity<WorkStation>().HasData(
@@ -195,7 +197,7 @@ namespace CellTracker.Api.Data
                 new WorkStation { Id = Guid.Parse("11111111-1111-1111-1111-111111111115"), Name = "WS-SLD-07", MqttDeviceId = "A7", OrdinalNumber = 7, Description = "Post-soldering cooling point", CellId = cell1 },
 
                 new WorkStation { Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), Name = "WS-INS-01", MqttDeviceId = "A8", OrdinalNumber = 1, Description = "Visual inspection camera station", CellId = cell2 },
-                new WorkStation { Id = Guid.Parse("22222222-2222-2222-2222-222222222221"), Name = "WS-INS-02", MqttDeviceId = "A9", OrdinalNumber = 2, Description = "AOI optical scan unit", CellId = cell2 }, 
+                new WorkStation { Id = Guid.Parse("22222222-2222-2222-2222-222222222221"), Name = "WS-INS-02", MqttDeviceId = "A9", OrdinalNumber = 2, Description = "AOI optical scan unit", CellId = cell2 },
                 new WorkStation { Id = Guid.Parse("22222222-2222-2222-2222-222222222223"), Name = "WS-INS-04", MqttDeviceId = "A10", OrdinalNumber = 3, Description = "Automated dimension check sensor", CellId = cell2 },
                 new WorkStation { Id = Guid.Parse("22222222-2222-2222-2222-222222222224"), Name = "WS-INS-05", MqttDeviceId = "A11", OrdinalNumber = 4, Description = "Barcode and label verification", CellId = cell2 },
                 new WorkStation { Id = Guid.Parse("22222222-2222-2222-2222-222222222225"), Name = "WS-INS-06", MqttDeviceId = "A12", OrdinalNumber = 5, Description = "Quality classification station", CellId = cell2 },
@@ -272,8 +274,51 @@ namespace CellTracker.Api.Data
                 new SimulationModel { Id = Guid.Parse("20000000-0000-0000-0000-000000000004"), Shift = Shift.Morning, NumberOfProductsMade = 220, MinutesOfSimulation = 4, ProductionLineId = Guid.Parse("44444444-4444-4444-4444-444444444444") },
                 new SimulationModel { Id = Guid.Parse("20000000-0000-0000-0000-000000000005"), Shift = Shift.Afternoon, NumberOfProductsMade = 260, MinutesOfSimulation = 5, ProductionLineId = Guid.Parse("55555555-5555-5555-5555-555555555555") }
             );
+
+            builder.Entity<OperatorTask>().HasData(
+                new OperatorTask
+                {
+                    Id = Guid.Parse("80000000-0000-0000-0000-000000000001"),
+                    Name = "Initial Setup",
+                    Description = "Prepare workstation tools and materials",
+                    QuantityGoal = 50,
+                    WorkStationId = Guid.Parse("99999999-9999-9999-9999-999999999999") 
+                },
+                new OperatorTask
+                {
+                    Id = Guid.Parse("80000000-0000-0000-0000-000000000002"),
+                    Name = "Component Processing",
+                    Description = "Handle and prepare incoming components",
+                    QuantityGoal = 120,
+                    WorkStationId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                },
+                new OperatorTask
+                {
+                    Id = Guid.Parse("80000000-0000-0000-0000-000000000003"),
+                    Name = "Quality Check",
+                    Description = "Perform visual and functional inspection",
+                    QuantityGoal = 80,
+                    WorkStationId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb") 
+                },
+                new OperatorTask
+                {
+                    Id = Guid.Parse("80000000-0000-0000-0000-000000000004"),
+                    Name = "Package Preparation",
+                    Description = "Prepare boxes and packaging materials",
+                    QuantityGoal = 200,
+                    WorkStationId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc") 
+                },
+                new OperatorTask
+                {
+                    Id = Guid.Parse("80000000-0000-0000-0000-000000000005"),
+                    Name = "Final Assembly",
+                    Description = "Assemble final product parts",
+                    QuantityGoal = 150,
+                    WorkStationId = Guid.Parse("10000000-aaaa-bbbb-cccc-111111111111") 
+                }
+            );
+
+
         }
-
-
     }
 }

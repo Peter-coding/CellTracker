@@ -1,6 +1,8 @@
-﻿using CellTracker.Api.Models.OperatorTask;
+﻿using CellTracker.Api.Models.Dto;
+using CellTracker.Api.Models.OperatorTask;
 using CellTracker.Api.Services.OperatorTaskService;
 using CellTracker.Api.Services.TelemetryRepository;
+using System.Threading.Tasks;
 
 namespace CellTracker.Api.Endpoint
 {
@@ -10,18 +12,20 @@ namespace CellTracker.Api.Endpoint
         {
             var path = $"/{pathPrefix}";
 
-            //app.MapPost($"{path}/text", function);
             app.MapPost($"{path}/Add", AddOperatorTask);
             app.MapGet($"{path}/GetAll", GetAllTasks);
             app.MapGet($"{path}/Get", GetTaskById);
             app.MapDelete($"{path}/Delete", RemoveTaskById);
             app.MapPut($"{path}/Update", UpdateTask);
-
-
         }
-        public static OperatorTask AddOperatorTask(IOperatorTaskService service, OperatorTask task)
+        public static async Task<IResult> AddOperatorTask(IOperatorTaskService service, CreateOperatorTaskDto taskDto)
         {
-            return service.AddOperatorTask(task);
+            var created = await service.AddOperatorTask(taskDto);
+            if(created != null)
+            {
+                return Results.Ok(created);
+            }
+            return Results.BadRequest("OperatorTask could not be created");
         }
 
         public static IQueryable<OperatorTask> GetAllTasks(IOperatorTaskService service)

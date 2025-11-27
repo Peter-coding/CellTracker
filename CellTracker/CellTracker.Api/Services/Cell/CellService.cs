@@ -96,7 +96,11 @@ namespace CellTracker.Api.Services.CellService
             {
                 throw new ArgumentException("Cell not found");
             }
-            return _unitOfWork.WorkStationRepository.GetAll().Where(ws => ws.CellId == id && ws.IsDeleted != true).ToList();
+            return _unitOfWork.WorkStationRepository
+                    .GetAll()
+                    .Include(ws => ws.OperatorTask)
+                    .Where(ws => ws.CellId == id && ws.IsDeleted != true)
+                    .ToList();
         }
         private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
         {

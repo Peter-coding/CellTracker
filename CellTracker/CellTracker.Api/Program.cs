@@ -49,6 +49,7 @@ namespace CellTracker.Api
             app.MapTelemetryEndpoint("Telemetry");
             app.MapFactoryConfiguratorEndpoint("Configurator");
             app.MapSimulationEndpoint("Simulation");
+            app.MapStatisticsEndpoint("Statistics");
 
             app.UseCors(x => x
                 .AllowCredentials()

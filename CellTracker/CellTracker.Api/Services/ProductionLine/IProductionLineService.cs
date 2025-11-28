@@ -1,6 +1,7 @@
 ﻿using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
 using CellTracker.Api.Models.OperatorTask;
+using CellTracker.Api.Models.Statistics;
 
 namespace CellTracker.Api.Services.ProductionLineService
 {
@@ -14,5 +15,6 @@ namespace CellTracker.Api.Services.ProductionLineService
         public Task<bool> SetProductionLineStatus(Guid id, ProductionLineStatus status);
         public Task<IEnumerable<Cell>> GetCellsInProdLine(Guid id);
         public Task<int> GetQuantityGoalInProdLine(Guid id);
+        public Task<ProdLineQualityRatio> GetEfficiencyOfProdLine(Guid id);
     }
 }

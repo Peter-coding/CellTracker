@@ -28,9 +28,7 @@ namespace CellTracker.Api.Endpoints
             app.MapDelete($"{path}/ProdLine/Delete/{{productionLineId}}", DeleteProductionLineAsync);
             app.MapPut($"{path}/ProdLine/SetProdLineStatus", SetProdLineStatus);
             app.MapGet($"{path}/ProdLine/CellsInProdLine/{{productionLineId}}", GetCellsInProdLine);
-            app.MapGet($"{path}/ProdLine/QuantityGoal/{{productionLineId}}", GetQuantityGoalInProdLine);
          
-
             app.MapPost($"{path}/WorkStation/Add", CreateWorkStationAsync);
             app.MapGet($"{path}/WorkStation/Get/{{workStationId}}", GetWorkStationByIdAsync);
             app.MapGet($"{path}/WorkStation/GetAll", GetAllWorkStations);
@@ -278,16 +276,6 @@ namespace CellTracker.Api.Endpoints
         public async static Task<IResult> GetWorkStationsInCell(ICellService cellService, Guid cellId)
         {
             var result = await cellService.GetWorkStationsOfCellAsync(cellId);
-            if (result != null)
-            {
-                return Results.Ok(result);
-            }
-            return Results.NotFound();
-        }
-
-        public async static Task<IResult> GetQuantityGoalInProdLine(IProductionLineService productionLineService, Guid productionLineId)
-        {
-            var result = await productionLineService.GetQuantityGoalInProdLine(productionLineId);
             if (result != null)
             {
                 return Results.Ok(result);

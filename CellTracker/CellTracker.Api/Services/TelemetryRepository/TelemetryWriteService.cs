@@ -50,7 +50,7 @@ namespace CellTracker.Api.Services.TelemetryRepository
             //delete all telemetry data
             var deleteApi = _influxDBClient.GetDeleteApi();
             var start = DateTime.UtcNow.AddYears(-10);
-            var stop = DateTime.UtcNow;
+            var stop = DateTime.UtcNow.AddYears(10);
             await deleteApi.Delete(start, stop,
                 "_measurement=\"Telemetry\"",
                 Environment.GetEnvironmentVariable("INFLUXDB_BUCKET"),

@@ -1,7 +1,10 @@
-﻿using CellTracker.Api.Models.Configuration;
+﻿using CellTracker.Api.Ingestion.Model;
+using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
+using CellTracker.Api.Models.Statistics;
 using CellTracker.Api.Repositories;
 using CellTracker.Api.Services.CellService;
+using CellTracker.Api.Services.TelemetryRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Services.ProductionLineService
@@ -10,11 +13,13 @@ namespace CellTracker.Api.Services.ProductionLineService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICellService _cellService;
+        private readonly ITelemetryFetchService _telemetryFetchService;
 
-        public ProductionLineService(IUnitOfWork unitOfWork, ICellService cellService)
+        public ProductionLineService(IUnitOfWork unitOfWork, ICellService cellService, ITelemetryFetchService telemetryFetchService)
         {
             _unitOfWork = unitOfWork;
             _cellService = cellService;
+            _telemetryFetchService =  telemetryFetchService;
         }
 
         public async Task<ProductionLine> AddProductionLine(CreateProductionLineDto productionLineDto)
@@ -150,6 +155,54 @@ namespace CellTracker.Api.Services.ProductionLineService
             }
 
             return quantityGoal;
+        }
+
+        public async Task<ProdLineQualityRatio> GetEfficiencyOfProdLine(Guid id)
+        {
+            var currentTime = DateTime.UtcNow;
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
+            if (productionLine == null)
+            {
+                throw new ArgumentException("Production Line not found");
+            }
+            
+            var cells = await GetCellsInProdLine(id);
+            List<WorkStation> workStations = new List<WorkStation>();
+            foreach (var cell in cells)
+            {
+                var ws = await _cellService.GetWorkStationsOfCellAsync(cell.Id);
+                workStations.AddRange(ws);
+            }
+
+      
+            List<TelemetryData> telemetryData = new List<TelemetryData>();
+            foreach (var ws in workStations)
+            {
+                telemetryData.AddRange(await _telemetryFetchService.GetTelemetryDataInCurrentShiftOfWorkStationAsync(ws.Id, currentTime));
+            }
+
+            int correct = 0;
+            int defective = 0;
+
+            foreach (var data in telemetryData)
+            {
+                if (data.Error != 0)
+                {
+                    defective++;
+                }
+                else
+                {
+                    correct++;
+                }
+            }
+
+            ProdLineQualityRatio result = new ProdLineQualityRatio
+            {
+                CorrectProducts = correct,
+                DefectiveProducts = defective
+            };
+
+            return result;
         }
 
         private async Task<int> GetNextOrdinalNumberForProdLineInFactory(Guid factoryId)

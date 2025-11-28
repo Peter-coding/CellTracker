@@ -81,11 +81,11 @@ namespace CellTracker.Api.Services.TelemetryRepository
 
         public async Task<Dictionary<string, int>> GetTelemetryCountPerWorkStationInCurrentShiftAsync(Guid cellId)
         {
-           var currentTime = DateTime.UtcNow;
-           var shiftStart = GetCurrentShiftStart(currentTime);
+            var currentTime = DateTime.UtcNow;
+            var shiftStart = GetCurrentShiftStart(currentTime);
 
-           var workStations = await _cellService.GetWorkStationsOfCellAsync(cellId);
-           var workStationIds = workStations.Select(ws => ws.Id.ToString()).ToList();
+            var workStations = await _cellService.GetWorkStationsOfCellAsync(cellId);
+            var workStationIds = workStations.Select(ws => ws.Id.ToString()).ToList();
 
             string query = $@"
             from(bucket: ""CellTracker"")
@@ -119,6 +119,41 @@ namespace CellTracker.Api.Services.TelemetryRepository
             return new Dictionary<string, int>();
         }
 
+        public async Task<List<TelemetryData>> GetTelemetryDataInCurrentShiftOfWorkStationAsync(Guid wsId, DateTime currentTime)
+        {
+            var shiftStart = GetCurrentShiftStart(DateTime.UtcNow);
+            string query = $@"
+                from(bucket: ""CellTracker"")
+                  |> range(start: {shiftStart.AddYears(-1):yyyy-MM-ddTHH:mm:ssZ}, stop: {currentTime.AddYears(1):yyyy-MM-ddTHH:mm:ssZ})
+                  |> filter(fn: (r) => r._measurement == ""Telemetry"")
+                  |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
+                  |> filter(fn: (r) => r.WorkStationId == ""{wsId}"")
+                ";
+
+
+            var tables = await _influxDBClient.GetQueryApi().QueryAsync(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
+         
+            var telemetryData = new List<TelemetryData>();
+            foreach (var table in tables)
+            {
+                foreach (var record in table.Records)
+                {
+                    telemetryData.Add(new TelemetryData
+                    {
+                        Id = Convert.ToInt32(record.GetValueByKey("Id")),
+                        WorkStationId = record.GetValueByKey("WorkStationId")?.ToString(),
+                        OperatorId = record.GetValueByKey("OperatorId")?.ToString(),
+                        ProductId = record.GetValueByKey("ProductId")?.ToString(),
+                        IsCompleted = record.GetValueByKey("IsCompleted") is bool b && b,
+                        Error = record.GetValueByKey("Error") is long l ? (byte)l : (byte)0,
+                        TimeStamp = record.GetTime().GetValueOrDefault().ToDateTimeUtc()
+                    });
+                }
+            }
+
+            return telemetryData;
+        }
+     
         private DateTime GetCurrentShiftStart(DateTime currentTime)
         {
             var currentHour = currentTime.Hour;
@@ -139,5 +174,7 @@ namespace CellTracker.Api.Services.TelemetryRepository
 
             return shiftStart;
         }
+
+
     }
 }

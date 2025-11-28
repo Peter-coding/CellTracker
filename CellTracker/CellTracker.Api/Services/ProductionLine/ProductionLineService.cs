@@ -174,7 +174,6 @@ namespace CellTracker.Api.Services.ProductionLineService
                 workStations.AddRange(ws);
             }
 
-      
             List<TelemetryData> telemetryData = new List<TelemetryData>();
             foreach (var ws in workStations)
             {

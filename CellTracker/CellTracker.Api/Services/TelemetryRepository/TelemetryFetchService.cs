@@ -122,38 +122,36 @@ namespace CellTracker.Api.Services.TelemetryRepository
         public async Task<List<TelemetryData>> GetTelemetryDataInCurrentShiftOfWorkStationAsync(Guid wsId, DateTime currentTime)
         {
             var shiftStart = GetCurrentShiftStart(DateTime.UtcNow);
+            var shiftEnd = shiftStart.AddHours(8);
             string query = $@"
                 from(bucket: ""CellTracker"")
-                  |> range(start: {shiftStart.AddYears(-1):yyyy-MM-ddTHH:mm:ssZ}, stop: {currentTime.AddYears(1):yyyy-MM-ddTHH:mm:ssZ})
+                  |> range(start: {shiftStart.AddYears(-1):yyyy-MM-ddTHH:mm:ssZ}, stop: {shiftEnd.AddYears(1):yyyy-MM-ddTHH:mm:ssZ})
                   |> filter(fn: (r) => r._measurement == ""Telemetry"")
                   |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
                   |> filter(fn: (r) => r.WorkStationId == ""{wsId}"")
                 ";
 
 
-            var tables = await _influxDBClient.GetQueryApi().QueryAsync(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
-         
+            var result = await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
+
             var telemetryData = new List<TelemetryData>();
-            foreach (var table in tables)
+
+            foreach (var record in result)
             {
-                foreach (var record in table.Records)
+                telemetryData.Add(new TelemetryData
                 {
-                    telemetryData.Add(new TelemetryData
-                    {
-                        Id = Convert.ToInt32(record.GetValueByKey("Id")),
-                        WorkStationId = record.GetValueByKey("WorkStationId")?.ToString(),
-                        OperatorId = record.GetValueByKey("OperatorId")?.ToString(),
-                        ProductId = record.GetValueByKey("ProductId")?.ToString(),
-                        IsCompleted = record.GetValueByKey("IsCompleted") is bool b && b,
-                        Error = record.GetValueByKey("Error") is long l ? (byte)l : (byte)0,
-                        TimeStamp = record.GetTime().GetValueOrDefault().ToDateTimeUtc()
-                    });
-                }
+                    Id = record.Id,
+                    WorkStationId = record.WorkStationId,
+                    OperatorId = record.OperatorId,
+                    IsCompleted = record.IsCompleted,
+                    Error = record.Error,
+                    TimeStamp = record.TimeStamp
+                });
             }
 
             return telemetryData;
         }
-     
+
         private DateTime GetCurrentShiftStart(DateTime currentTime)
         {
             var currentHour = currentTime.Hour;

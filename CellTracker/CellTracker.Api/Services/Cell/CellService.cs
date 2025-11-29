@@ -150,6 +150,21 @@ namespace CellTracker.Api.Services.CellService
             return result;
         }
 
+        public async Task<int> GetQuantityGoalOfCell(Guid cellId)
+        {
+            var workStations = await GetWorkStationsOfCellAsync(cellId);
+            int quantityGoal = 0;
+            foreach (var ws in workStations)
+            {
+                if (ws.OperatorTask != null)
+                {
+                    quantityGoal += ws.OperatorTask.QuantityGoal;
+                }
+            }
+
+            return quantityGoal;
+        }
+
         private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
         {
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);

@@ -14,5 +14,6 @@ namespace CellTracker.Api.Services.CellService
         public Task<Cell> UpdateCell(UpdateCellDto cellDto);
         public Task<IEnumerable<WorkStation>> GetWorkStationsOfCellAsync(Guid guid);
         public Task<QualityRatio> GetEfficiencyOfCell(Guid cellId);
+        public Task<int> GetQuantityGoalOfCell(Guid cellId);
     }
 }

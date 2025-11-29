@@ -1,6 +1,7 @@
 ﻿using CellTracker.Api.Services.CellService;
 using CellTracker.Api.Services.ProductionLineService;
 using CellTracker.Api.Services.WorkStationService;
+using InfluxDB.Client.Api.Service;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Cryptography.X509Certificates;
 
@@ -12,6 +13,8 @@ namespace CellTracker.Api.Endpoints
         {
             var path = $"/{pathPrefix}";
             app.MapGet($"{path}/GetQuantityGoalOfProdLine/{{prodLineId}}", GetQuantityGoalOfProdLine);
+            app.MapGet($"{path}/GetQuantityGoalOfCell/{{cellId}}", GetQuantityGoalOfCell);
+           
             app.MapGet(path + $"/GetEfficiencyOfProdLineCurrentShift/{{prodLineId}}", GetEfficiencyOfProdLineCurrentShift);
             app.MapGet($"{path}/GetEfficiencyOfCellCurrentShift/{{cellId}}", GetEfficiencyOfCellCurrentShift);
             app.MapGet($"{path}/GetEfficiencyOfWorkStationCurrentShift/{{wsId}}", GetEfficiencyOfWorkStationCurrentShift);
@@ -20,6 +23,12 @@ namespace CellTracker.Api.Endpoints
         public async static Task<IResult> GetQuantityGoalOfProdLine(IProductionLineService productionLineService, Guid prodLineId)
         {
             var queantityGoal = await productionLineService.GetQuantityGoalInProdLine(prodLineId);
+            return Results.Ok(queantityGoal);
+        }
+
+        public async static Task<IResult> GetQuantityGoalOfCell(ICellService cellService, Guid cellId)
+        {
+            var queantityGoal = await cellService.GetQuantityGoalOfCell(cellId);
             return Results.Ok(queantityGoal);
         }
 

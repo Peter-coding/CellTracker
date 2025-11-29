@@ -13,12 +13,10 @@ namespace CellTracker.Api.Services.TelemetryRepository
     public class TelemetryFetchService : ITelemetryFetchService
     {
         private readonly InfluxDBClient _influxDBClient;
-        private readonly ICellService _cellService;
-        public TelemetryFetchService(IUnitOfWork unitOfWork, ICellService cellService)
+        public TelemetryFetchService(IUnitOfWork unitOfWork)
         {
             var connectionString = ConnectionConfiguration.GetInfluxDbConnectionString();
             _influxDBClient = new InfluxDBClient(connectionString);
-            _cellService = cellService;
         }
 
         public async Task<List<TelemetryData>> GetBetweenAsync(DateTime from, DateTime to)
@@ -79,39 +77,39 @@ namespace CellTracker.Api.Services.TelemetryRepository
         }
 
 
-        public async Task<Dictionary<string, int>> GetTelemetryCountPerWorkStationInCurrentShiftAsync(Guid cellId)
-        {
-            var currentTime = DateTime.UtcNow;
-            var shiftStart = GetCurrentShiftStart(currentTime);
+        //public async Task<Dictionary<string, int>> GetTelemetryCountPerWorkStationInCurrentShiftAsync(Guid cellId)
+        //{
+        //    var currentTime = DateTime.UtcNow;
+        //    var shiftStart = GetCurrentShiftStart(currentTime);
 
-            var workStations = await _cellService.GetWorkStationsOfCellAsync(cellId);
-            var workStationIds = workStations.Select(ws => ws.Id.ToString()).ToList();
+        //    var workStations = await _cellService.GetWorkStationsOfCellAsync(cellId);
+        //    var workStationIds = workStations.Select(ws => ws.Id.ToString()).ToList();
 
-            string query = $@"
-            from(bucket: ""CellTracker"")
-              |> range(start: {shiftStart:yyyy-MM-ddTHH:mm:ssZ}, stop: {currentTime:yyyy-MM-ddTHH:mm:ssZ})
-              |> filter(fn: (r) => 
-                  r._measurement == ""Telemetry"" and 
-                  contains(value: r.WorkStationId, set: {JsonConvert.SerializeObject(workStationIds)}))
-              |> group(columns: [""WorkStationId""])
-              |> count()
-              |> keep(columns: [""WorkStationId"", ""_value""])
-            ";
+        //    string query = $@"
+        //    from(bucket: ""CellTracker"")
+        //      |> range(start: {shiftStart:yyyy-MM-ddTHH:mm:ssZ}, stop: {currentTime:yyyy-MM-ddTHH:mm:ssZ})
+        //      |> filter(fn: (r) => 
+        //          r._measurement == ""Telemetry"" and 
+        //          contains(value: r.WorkStationId, set: {JsonConvert.SerializeObject(workStationIds)}))
+        //      |> group(columns: [""WorkStationId""])
+        //      |> count()
+        //      |> keep(columns: [""WorkStationId"", ""_value""])
+        //    ";
 
-            var tables = await _influxDBClient.GetQueryApi().QueryAsync(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
+        //    var tables = await _influxDBClient.GetQueryApi().QueryAsync(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
 
-            var result = new Dictionary<string, int>();
+        //    var result = new Dictionary<string, int>();
 
-            foreach (var record in tables.SelectMany(t => t.Records))
-            {
-                var workStationId = record.GetValueByKey("WorkStationId")?.ToString();
-                var count = Convert.ToInt32(record.GetValue());
-                if (workStationId != null)
-                    result[workStationId] = count;
-            }
+        //    foreach (var record in tables.SelectMany(t => t.Records))
+        //    {
+        //        var workStationId = record.GetValueByKey("WorkStationId")?.ToString();
+        //        var count = Convert.ToInt32(record.GetValue());
+        //        if (workStationId != null)
+        //            result[workStationId] = count;
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public async Task<Dictionary<string, int>> GetTelemetryCountPerProductionLineAsync(Guid productionLineId)
         {

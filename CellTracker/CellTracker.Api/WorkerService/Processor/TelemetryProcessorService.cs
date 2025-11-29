@@ -48,7 +48,7 @@ namespace CellTracker.Api.WorkerService.Processor
         protected async Task ProcessQueueAsync(CancellationToken stoppingToken)
         {
             //TODO: Delete later. Just for testing purposes, not to have so many entries.
-            await _telemetryWriteService.DeleteAllTelemetryData();
+            //await _telemetryWriteService.DeleteAllTelemetryData();
 
             SaveTelemetryDataPeriodicAsync(stoppingToken);
 

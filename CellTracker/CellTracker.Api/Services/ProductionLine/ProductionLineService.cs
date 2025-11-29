@@ -157,9 +157,10 @@ namespace CellTracker.Api.Services.ProductionLineService
             return quantityGoal;
         }
 
-        public async Task<ProdLineQualityRatio> GetEfficiencyOfProdLine(Guid id)
+        public async Task<QualityRatio> GetEfficiencyOfProdLine(Guid id)
         {
             var currentTime = DateTime.UtcNow;
+
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
             if (productionLine == null)
             {
@@ -195,7 +196,7 @@ namespace CellTracker.Api.Services.ProductionLineService
                 }
             }
 
-            ProdLineQualityRatio result = new ProdLineQualityRatio
+            QualityRatio result = new QualityRatio
             {
                 CorrectProducts = correct,
                 DefectiveProducts = defective

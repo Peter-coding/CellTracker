@@ -1,6 +1,9 @@
-﻿using CellTracker.Api.Models.Configuration;
+﻿using CellTracker.Api.Ingestion.Model;
+using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
+using CellTracker.Api.Models.Statistics;
 using CellTracker.Api.Repositories;
+using CellTracker.Api.Services.TelemetryRepository;
 using InfluxDB.Client.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,9 +12,11 @@ namespace CellTracker.Api.Services.WorkStationService
     public class WorkStationService : IWorkStationService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public WorkStationService(IUnitOfWork unitOfWork)
+        private readonly ITelemetryFetchService _telemetryFetchService;
+        public WorkStationService(IUnitOfWork unitOfWork, ITelemetryFetchService telemetryFetchService)
         {
             _unitOfWork = unitOfWork;
+            _telemetryFetchService = telemetryFetchService;
         }
 
         public async Task<WorkStation> AddWorkStation(CreateWorkStationDto workStationDto)
@@ -89,6 +94,37 @@ namespace CellTracker.Api.Services.WorkStationService
             }
 
             return workStation;
+        }
+
+        public async Task<QualityRatio> GetEfficiencyOfWorkStation(Guid id)
+        {
+            var currentTime = DateTime.UtcNow;
+            var workStation = await _unitOfWork.WorkStationRepository.GetByIdAsync(id);
+            List<TelemetryData> telemetryData = new List<TelemetryData>();
+            telemetryData.AddRange(await _telemetryFetchService.GetTelemetryDataInCurrentShiftOfWorkStationAsync(id, currentTime));
+
+            int correct = 0;
+            int defective = 0;
+
+            foreach (var data in telemetryData)
+            {
+                if (data.Error != 0)
+                {
+                    defective++;
+                }
+                else
+                {
+                    correct++;
+                }
+            }
+
+            QualityRatio result = new QualityRatio
+            {
+                CorrectProducts = correct,
+                DefectiveProducts = defective
+            };
+
+            return result;
         }
 
         private async Task<int> GetNextOrdinalNumberForWorkStation(Guid cellId)

@@ -15,6 +15,6 @@ namespace CellTracker.Api.Services.ProductionLineService
         public Task<bool> SetProductionLineStatus(Guid id, ProductionLineStatus status);
         public Task<IEnumerable<Cell>> GetCellsInProdLine(Guid id);
         public Task<int> GetQuantityGoalInProdLine(Guid id);
-        public Task<ProdLineQualityRatio> GetEfficiencyOfProdLine(Guid id);
+        public Task<QualityRatio> GetEfficiencyOfProdLine(Guid id);
     }
 }

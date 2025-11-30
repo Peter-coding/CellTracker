@@ -165,6 +165,47 @@ namespace CellTracker.Api.Services.CellService
             return quantityGoal;
         }
 
+        public async Task<IEnumerable<Dictionary<string, QualityRatio>>> GetOperatorEfficiencyPerHourCurrentShift(Guid cellId)
+        {
+            var currentTime = DateTime.UtcNow;
+            var shiftStart = _telemetryFetchService.GetCurrentShiftStart(currentTime);
+
+            var workStations = await GetWorkStationsOfCellAsync(cellId);
+            List<Dictionary<string, QualityRatio>> result = new List<Dictionary<string, QualityRatio>>();
+
+            for(int i  = 0; i <= 7; i++)
+                result.Add(new Dictionary<string, QualityRatio>());
+
+            foreach (var ws in workStations)
+            {
+                var telemetryData = await _telemetryFetchService.GetTelemetryOfWsCurrentShiftAsync(ws.Id, currentTime);
+                Dictionary<string, QualityRatio> efficiencyPerHour = new Dictionary<string, QualityRatio>();
+
+                foreach (var data in telemetryData)
+                {
+                    var time = data.TimeStamp;
+                    var hour = (time.Hour - 6 + 24) % 8;  //n th hour of the shift
+                    var id = data.OperatorId;
+
+                    if (!result[hour].ContainsKey(data.OperatorId))
+                    {
+                        result[hour][data.OperatorId] = new QualityRatio
+                        {
+                            CorrectProducts = 0,
+                            DefectiveProducts = 0
+                        };
+                    }
+
+                    if (data.Error != 0)
+                        result[hour][data.OperatorId].DefectiveProducts += 1;
+                    else
+                        result[hour][data.OperatorId].CorrectProducts += 1;
+                }
+            }
+
+            return result;
+        }
+
         private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
         {
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);

@@ -18,6 +18,7 @@ namespace CellTracker.Api.Endpoints
             app.MapGet(path + $"/GetEfficiencyOfProdLineCurrentShift/{{prodLineId}}", GetEfficiencyOfProdLineCurrentShift);
             app.MapGet($"{path}/GetEfficiencyOfCellCurrentShift/{{cellId}}", GetEfficiencyOfCellCurrentShift);
             app.MapGet($"{path}/GetEfficiencyOfWorkStationCurrentShift/{{wsId}}", GetEfficiencyOfWorkStationCurrentShift);
+            app.MapGet($"{path}/GetOperatorEfficiencyPerHourCurrentShift/{{cellId}}", GetOperatorEfficiencyPerHourCurrentShift);
         }
         
         public async static Task<IResult> GetQuantityGoalOfProdLine(IProductionLineService productionLineService, Guid prodLineId)
@@ -47,6 +48,12 @@ namespace CellTracker.Api.Endpoints
         public async static Task<IResult> GetEfficiencyOfWorkStationCurrentShift(IWorkStationService workStationService, Guid wsId)
         {
             var efficiency = await workStationService.GetEfficiencyOfWorkStation(wsId);
+            return Results.Ok(efficiency);
+        }
+
+        public async static Task<IResult> GetOperatorEfficiencyPerHourCurrentShift(ICellService cellService, Guid cellId)
+        {
+            var efficiency = await cellService.GetOperatorEfficiencyPerHourCurrentShift(cellId);
             return Results.Ok(efficiency);
         }
     }

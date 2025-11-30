@@ -15,5 +15,6 @@ namespace CellTracker.Api.Services.CellService
         public Task<IEnumerable<WorkStation>> GetWorkStationsOfCellAsync(Guid guid);
         public Task<QualityRatio> GetEfficiencyOfCell(Guid cellId);
         public Task<int> GetQuantityGoalOfCell(Guid cellId);
+        public Task<IEnumerable<Dictionary<string, QualityRatio>>> GetOperatorEfficiencyPerHourCurrentShift(Guid cellId);
     }
 }

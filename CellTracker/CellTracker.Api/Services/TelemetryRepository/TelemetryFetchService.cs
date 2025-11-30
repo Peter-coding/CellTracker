@@ -34,6 +34,22 @@ namespace CellTracker.Api.Services.TelemetryRepository
             return await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
         }
 
+        public async Task<List<TelemetryData>> GetTelemetryOfWsCurrentShiftAsync(Guid wsId, DateTime currentTime)
+        {
+            var shiftStart = GetCurrentShiftStart(currentTime);
+            var shiftEnd = shiftStart.AddHours(8);
+
+            string query = $@"
+                from(bucket: ""CellTracker"")
+                  |> range(start: {shiftStart:yyyy-MM-ddTHH:mm:ssZ}, stop: {shiftEnd:yyyy-MM-ddTHH:mm:ssZ})
+                  |> filter(fn: (r) => r._measurement == ""Telemetry"")
+                  |> pivot(rowKey: [""_time""], columnKey: [""_field""], valueColumn: ""_value"")
+                  |> filter(fn: (r) => r.WorkStationId == ""{wsId}"")
+                ";
+
+            return await _influxDBClient.GetQueryApi().QueryAsync<TelemetryData>(query, Environment.GetEnvironmentVariable("INFLUXDB_ORG"));
+        }
+
         public async Task<int> GetCountInCurrentShiftAsync(string operatorId, string workStationId)
         {
             var currentTime = DateTime.UtcNow;
@@ -150,7 +166,7 @@ namespace CellTracker.Api.Services.TelemetryRepository
             return telemetryData;
         }
 
-        private DateTime GetCurrentShiftStart(DateTime currentTime)
+        public DateTime GetCurrentShiftStart(DateTime currentTime)
         {
             var currentHour = currentTime.Hour;
             DateTime shiftStart;

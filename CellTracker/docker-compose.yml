@@ -12,7 +12,7 @@ services:
       - DB_NAME=Tracker
       - DB_USER=test
       - DB_PASSWORD=test
-      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_BROKER_HOST=172.22.103.100
       - MQTT_BROKER_PORT=1883
       - JWT__KEY=your-secret-key-here-that-should-also-be-fairly-long
       - JWT__ISSUER=celltracker.api
@@ -30,7 +30,7 @@ services:
     depends_on:
       - appdb
       - celltracker.worker
-      - mosquitto
+      # - mosquitto
     networks:
       - cellnet
 
@@ -39,7 +39,7 @@ services:
     container_name: worker
     build:
       context: .
-      dockerfile: ../CellTracker.MqttIngestion/Dockerfile
+      dockerfile: CellTracker.MqttIngestion/Dockerfile
     environment:
       - DB_HOST=appdb
       - DB_NAME=Tracker
@@ -54,22 +54,22 @@ services:
       - DISTR_QK=telemetry:distribution_queue
     depends_on:
       - appdb
-      - mosquitto
+      # - mosquitto
       - redis
     networks:
       - cellnet
 
-  mosquitto:
-    image: eclipse-mosquitto
-    container_name: mosquitto
-    ports:
-      - "1883:1883"
-      # - "9001:9001"  # WebSocket if needed
-    volumes:
-      - ./CellTracker.Api/Configuration/Mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - mosquitto_data:/mosquitto/data
-    networks:
-      - cellnet
+  # mosquitto:
+  #   image: eclipse-mosquitto
+  #   container_name: mosquitto
+  #   ports:
+  #     - "1883:1883"
+  #     # - "9001:9001"  # WebSocket if needed
+  #   volumes:
+  #     - ./CellTracker.Api/Configuration/Mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  #     - mosquitto_data:/mosquitto/data
+  #   networks:
+  #     - cellnet
   
   appdb:
     image: postgres:latest
@@ -121,7 +121,7 @@ services:
 volumes:
   influxdb2-data:
   influxdb2-config:
-  mosquitto_data:
+  # mosquitto_data:
   # mosquitto_config:
 
 #Must be added externally

@@ -10,6 +10,7 @@ namespace CellTracker.Api.Configuration.MqttClient
 
             var mqttPort = int.TryParse(Environment.GetEnvironmentVariable("MQTT_BROKER_PORT"), out var port) ? port : 1883;
 
+            Console.WriteLine("Mqqt Host + Port " + mqttHost + " - " + mqttPort);
             // Transient, because TestMqttService uses this too
             services.AddTransient<IMqttClient>(sp =>
             {

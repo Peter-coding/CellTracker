@@ -1,39 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 
-  <PropertyGroup>
-    <UserSecretsId>655794f9-121d-43a9-b55d-d29cf027c051</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
-  </PropertyGroup>
+	<PropertyGroup>
+		<UserSecretsId>655794f9-121d-43a9-b55d-d29cf027c051</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+	</PropertyGroup>
 
 
-  <ItemGroup>
-    <PackageReference Include="InfluxDB.Client" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
-    <PackageReference Include="MQTTnet" />
-    <PackageReference Include="MQTTnet.Server" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <PackageReference Include="Serilog.AspNetCore" />
-    <PackageReference Include="Serilog.Sinks.PostgreSQL" />
-    <PackageReference Include="StackExchange.Redis" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="InfluxDB.Client" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Core" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+		<PackageReference Include="MQTTnet" />
+		<PackageReference Include="MQTTnet.Server" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+		<PackageReference Include="Serilog.AspNetCore" />
+		<PackageReference Include="Serilog.Sinks.PostgreSQL" />
+		<PackageReference Include="StackExchange.Redis" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
+	</ItemGroup>
 
 
-  <ItemGroup>
-    <Folder Include="Data\Configuration\" />
-    <Folder Include="Migrations\App\" />
-    <Folder Include="Migrations\Identity\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Data\Configuration\" />
+		<Folder Include="Migrations\App\" />
+		<Folder Include="Migrations\Identity\" />
+	</ItemGroup>
 
 </Project>

@@ -11,6 +11,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:9.0-noble AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+RUN echo "PWD:" && pwd && echo "FILES:" && ls -la && echo "TREE:" && find . -maxdepth 4 -type f
 COPY ["CellTracker.MqttIngestion.csproj", "."]
 RUN dotnet restore "./CellTracker.MqttIngestion.csproj"
 COPY . .

@@ -64,7 +64,7 @@ services:
     container_name: mosquitto
     ports:
       - "1883:1883"
-      - "9001:9001"  # WebSocket if needed
+      # - "9001:9001"  # WebSocket if needed
     volumes:
       - ./CellTracker.Api/Configuration/Mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - mosquitto_data:/mosquitto/data

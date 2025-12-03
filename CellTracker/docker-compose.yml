@@ -20,19 +20,19 @@ services:
       - JWT__EXPIRATIONINMINUTES=30
       - JWT__REFRESHTOKENEXPIRATIONDAYS=7
       - INFLUXDB_TOKEN=my-super-token
-      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_URL=http://influxdbcelliot:8086
       - INFLUXDB_ORG=CellTracker
       - INFLUXDB_BUCKET=CellTracker
       - DISTR_QK=telemetry:distribution_queue
     ports:
-      - 5000:8080
-      - 5001:8081
+      - 5010:8080
+      # - 5010:8081
     depends_on:
       - appdb
       - celltracker.worker
       # - mosquitto
-    networks:
-      - cellnet
+    # networks:
+    #   - cellnet
 
   celltracker.worker:
     image: ${DOCKER_REGISTRY-}celltrackerworker
@@ -46,7 +46,7 @@ services:
       - DB_USER=test
       - DB_PASSWORD=test
       - INFLUXDB_TOKEN=my-super-token
-      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_URL=http://influxdbcelliot:8086
       - INFLUXDB_ORG=CellTracker
       - INFLUXDB_BUCKET=CellTracker
       - RAW_QK=telemetry:raw_queue
@@ -56,8 +56,8 @@ services:
       - appdb
       # - mosquitto
       - redis
-    networks:
-      - cellnet
+    # networks:
+    #   - cellnet
 
   # mosquitto:
   #   image: eclipse-mosquitto
@@ -80,8 +80,8 @@ services:
       - POSTGRES_PASSWORD=test
     ports:
       - 5432:5432
-    networks:
-      - cellnet
+    # networks:
+    #   - cellnet
   
   redis:
     image: redis:7.4-alpine
@@ -92,12 +92,12 @@ services:
     #   - redis_data:/data
     # command: ["redis-server", "--appendonly", "yes"]
     restart: unless-stopped
-    networks:
-      - cellnet
+    # networks:
+    #   - cellnet
 
-  influxdb:
+  influxdbcelliot:
     image: influxdb:2.7
-    container_name: influxdb
+    container_name: influxdbcelliot
     ports:
       - "8086:8086"
     environment:
@@ -115,8 +115,8 @@ services:
       - type: volume
         source: influxdb2-config
         target: /etc/influxdb2
-    networks:
-      - cellnet
+    # networks:
+    #   - cellnet
 
 volumes:
   influxdb2-data:
@@ -126,8 +126,8 @@ volumes:
 
 #Must be added externally
 #""docker network create cellnet" command for developement
-networks:
-  cellnet:
-    name: cellnet
-    driver: bridge
-    external: true 
+# networks:
+#   cellnet:
+#     name: cellnet
+#     driver: bridge
+#     external: true 

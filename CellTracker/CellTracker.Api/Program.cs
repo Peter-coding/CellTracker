@@ -35,7 +35,7 @@ namespace CellTracker.Api
                 app.ApplyMigrations();
                 await app.SeedInitialDataAsync();
             }
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             
 

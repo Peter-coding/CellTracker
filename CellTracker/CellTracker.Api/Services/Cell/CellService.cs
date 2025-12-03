@@ -1,6 +1,9 @@
-﻿using CellTracker.Api.Models.Configuration;
+﻿using CellTracker.Api.Ingestion.Model;
+using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
+using CellTracker.Api.Models.Statistics;
 using CellTracker.Api.Repositories;
+using CellTracker.Api.Services.TelemetryRepository;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
@@ -9,9 +12,11 @@ namespace CellTracker.Api.Services.CellService
     public class CellService : ICellService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CellService(IUnitOfWork unitOfWork)
+        private readonly ITelemetryFetchService _telemetryFetchService;
+        public CellService(IUnitOfWork unitOfWork, ITelemetryFetchService telemetryFetchService)
         {
             _unitOfWork = unitOfWork;
+            _telemetryFetchService = telemetryFetchService;
         }
 
         public async Task<Cell> AddCell(CreateCellDto cellDto)
@@ -42,7 +47,7 @@ namespace CellTracker.Api.Services.CellService
 
         public async Task<IEnumerable<Cell>> GetAllCells()
         {
-            return await _unitOfWork.CellRepository.GetAll().ToListAsync();
+            return await _unitOfWork.CellRepository.GetAll().Where(cell => cell.IsDeleted != true).ToListAsync();
         }
 
         public async Task<Cell> GetCellById(Guid id)
@@ -59,17 +64,17 @@ namespace CellTracker.Api.Services.CellService
             }
             _unitOfWork.CellRepository.RemoveById(id);
             var count = await _unitOfWork.CompleteAsync();
-            if (count == 0)
-            {
-                return false;
-            }
-
-            return true;
+            return count > 0;
         }
 
         public async Task<Cell> UpdateCell(UpdateCellDto cellDto)
         {
             var cell = await _unitOfWork.CellRepository.GetByIdAsync(cellDto.Id);
+
+            if(cell == null)
+            {
+                throw new ArgumentException("Cell not found");
+            }
 
             //TODO add automapper
             cell.Name = cellDto.Name;
@@ -96,16 +101,123 @@ namespace CellTracker.Api.Services.CellService
             {
                 throw new ArgumentException("Cell not found");
             }
-            return _unitOfWork.WorkStationRepository.GetAll().Where(ws => ws.CellId == id).ToList();
+            return _unitOfWork.WorkStationRepository
+                    .GetAll()
+                    .Include(ws => ws.OperatorTask)
+                    .Where(ws => ws.CellId == id && ws.IsDeleted != true)
+                    .ToList();
         }
+
+        public async Task<QualityRatio> GetEfficiencyOfCell(Guid cellId)
+        {
+            var currentTime = DateTime.UtcNow;
+
+            var cell = await _unitOfWork.CellRepository.GetByIdAsync(cellId);
+            if (cell == null)
+            {
+                throw new ArgumentException("Cell not found");
+            }
+
+            var workStations = await GetWorkStationsOfCellAsync(cellId);
+
+            List<TelemetryData> telemetryData = new List<TelemetryData>();
+            foreach (var ws in workStations)
+            {
+                telemetryData.AddRange(await _telemetryFetchService.GetTelemetryDataInCurrentShiftOfWorkStationAsync(ws.Id, currentTime));
+            }
+
+            int correct = 0;
+            int defective = 0;
+
+            foreach (var data in telemetryData)
+            {
+                if (data.Error != 0)
+                {
+                    defective++;
+                }
+                else
+                {
+                    correct++;
+                }
+            }
+
+            QualityRatio result = new QualityRatio
+            {
+                CorrectProducts = correct,
+                DefectiveProducts = defective
+            };
+
+            return result;
+        }
+
+        public async Task<int> GetQuantityGoalOfCell(Guid cellId)
+        {
+            var workStations = await GetWorkStationsOfCellAsync(cellId);
+            int quantityGoal = 0;
+            foreach (var ws in workStations)
+            {
+                if (ws.OperatorTask != null)
+                {
+                    quantityGoal += ws.OperatorTask.QuantityGoal;
+                }
+            }
+
+            return quantityGoal;
+        }
+
+        public async Task<IEnumerable<Dictionary<string, QualityRatio>>> GetOperatorEfficiencyPerHourCurrentShift(Guid cellId)
+        {
+            var currentTime = DateTime.UtcNow;
+            var shiftStart = _telemetryFetchService.GetCurrentShiftStart(currentTime);
+
+            var workStations = await GetWorkStationsOfCellAsync(cellId);
+            List<Dictionary<string, QualityRatio>> result = new List<Dictionary<string, QualityRatio>>();
+
+            for(int i  = 0; i <= 7; i++)
+                result.Add(new Dictionary<string, QualityRatio>());
+
+            foreach (var ws in workStations)
+            {
+                var telemetryData = await _telemetryFetchService.GetTelemetryOfWsCurrentShiftAsync(ws.Id, currentTime);
+                Dictionary<string, QualityRatio> efficiencyPerHour = new Dictionary<string, QualityRatio>();
+
+                foreach (var data in telemetryData)
+                {
+                    var time = data.TimeStamp;
+                    var hour = (time.Hour - 6 + 24) % 8;  //n th hour of the shift
+                    var id = data.OperatorId;
+
+                    if (!result[hour].ContainsKey(data.OperatorId))
+                    {
+                        result[hour][data.OperatorId] = new QualityRatio
+                        {
+                            CorrectProducts = 0,
+                            DefectiveProducts = 0
+                        };
+                    }
+
+                    if (data.Error != 0)
+                        result[hour][data.OperatorId].DefectiveProducts += 1;
+                    else
+                        result[hour][data.OperatorId].CorrectProducts += 1;
+                }
+            }
+
+            return result;
+        }
+
         private async Task<int> GetNextOrdinalNumberForCellOnProductionLine(Guid productionLineId)
         {
             var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(productionLineId);
-            if (productionLine != null && !productionLine.Cells.Any())
+            var cells = await _unitOfWork.CellRepository.GetAll()
+                .Where(c => c.ProductionLineId == productionLineId)
+                .ToListAsync();
+
+            if (productionLine != null && !cells.Any())
             {
                 return 1;
             }
-            return productionLine.Cells.Max(c => c.OrdinalNumber) + 1;
+            return cells.Max(c => c.OrdinalNumber) + 1;
         }
     }
 }

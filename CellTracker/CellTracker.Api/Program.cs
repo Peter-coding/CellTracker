@@ -41,13 +41,15 @@ namespace CellTracker.Api
 
             app.MapHub<SignalRHub>("/hub");
 
-            app.MapAuthEndpoint("Authentication");
+            app.MapAuthEndpoint("Auth");
             //Turning on for our own GlobalExceptionHandler
             app.UseExceptionHandler();
 
-            app.MapOperatorEndpoint("operator");
-            app.MapTelemetryEndpoint("telemetry");
-            app.MapFactoryConfiguratorEndpoint("factoryConfigurator");
+            app.MapOperatorEndpoint("Operator");
+            app.MapTelemetryEndpoint("Telemetry");
+            app.MapFactoryConfiguratorEndpoint("Configurator");
+            app.MapSimulationEndpoint("Simulation");
+            app.MapStatisticsEndpoint("Statistics");
 
             app.UseCors(x => x
                 .AllowCredentials()

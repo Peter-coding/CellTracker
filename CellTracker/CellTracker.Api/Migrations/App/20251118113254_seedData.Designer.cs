@@ -3,6 +3,7 @@ using System;
 using CellTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CellTracker.Api.Migrations.App
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251118113254_seedData")]
+    partial class seedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,6 +118,44 @@ namespace CellTracker.Api.Migrations.App
                     b.HasKey("Id");
 
                     b.ToTable("SiteUser", "cell_tracker");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "ee6739f0-97e2-496c-8ffe-74a39ae7a8e5",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "b1dad2a8-50e9-4261-9e6c-860f22920143",
+                            Email = "test.user@example.com",
+                            EmailConfirmed = true,
+                            FirstName = "Test",
+                            LastName = "User",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "TEST.USER@EXAMPLE.COM",
+                            NormalizedUserName = "TESTUSER",
+                            PasswordHash = "1111111",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "ee6739f0-97e2-496c-8ffe-74a39ae7a8e4",
+                            TwoFactorEnabled = false,
+                            UserName = "testuser"
+                        },
+                        new
+                        {
+                            Id = "35031d70-8287-4bfe-bd63-05a816f44885",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "6916c252-7a94-49a5-aa43-7ec194af2a1f",
+                            Email = "test.user1@example.com",
+                            EmailConfirmed = true,
+                            FirstName = "Test1",
+                            LastName = "User1",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "TEST.USER1@EXAMPLE.COM",
+                            NormalizedUserName = "TESTUSER1",
+                            PasswordHash = "0000000",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "35031d70-8287-4bfe-bd63-05a816f44880",
+                            TwoFactorEnabled = false,
+                            UserName = "testuser1"
+                        });
                 });
 
             modelBuilder.Entity("CellTracker.Api.Models.Configuration.Cell", b =>
@@ -1511,72 +1552,9 @@ namespace CellTracker.Api.Migrations.App
                     b.Property<int>("QuantityGoal")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("WorkStationId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkStationId")
-                        .IsUnique();
-
                     b.ToTable("OperatorTasks", "cell_tracker");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000001"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Prepare workstation tools and materials",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Initial Setup",
-                            QuantityGoal = 50,
-                            WorkStationId = new Guid("99999999-9999-9999-9999-999999999999")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000002"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Handle and prepare incoming components",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Component Processing",
-                            QuantityGoal = 120,
-                            WorkStationId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000003"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Perform visual and functional inspection",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Quality Check",
-                            QuantityGoal = 80,
-                            WorkStationId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000004"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Prepare boxes and packaging materials",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Package Preparation",
-                            QuantityGoal = 200,
-                            WorkStationId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000005"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Assemble final product parts",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Final Assembly",
-                            QuantityGoal = 150,
-                            WorkStationId = new Guid("10000000-aaaa-bbbb-cccc-111111111111")
-                        });
                 });
 
             modelBuilder.Entity("CellTracker.Api.Models.Simulation.SimulationModel", b =>
@@ -1714,17 +1692,6 @@ namespace CellTracker.Api.Migrations.App
                     b.Navigation("Cell");
                 });
 
-            modelBuilder.Entity("CellTracker.Api.Models.OperatorTask.OperatorTask", b =>
-                {
-                    b.HasOne("CellTracker.Api.Models.Configuration.WorkStation", "WorkStation")
-                        .WithOne("OperatorTask")
-                        .HasForeignKey("CellTracker.Api.Models.OperatorTask.OperatorTask", "WorkStationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("WorkStation");
-                });
-
             modelBuilder.Entity("CellTracker.Api.Models.Simulation.SimulationModel", b =>
                 {
                     b.HasOne("CellTracker.Api.Models.Configuration.ProductionLine", "ProductionLine")
@@ -1749,11 +1716,6 @@ namespace CellTracker.Api.Migrations.App
             modelBuilder.Entity("CellTracker.Api.Models.Configuration.ProductionLine", b =>
                 {
                     b.Navigation("Cells");
-                });
-
-            modelBuilder.Entity("CellTracker.Api.Models.Configuration.WorkStation", b =>
-                {
-                    b.Navigation("OperatorTask");
                 });
 #pragma warning restore 612, 618
         }

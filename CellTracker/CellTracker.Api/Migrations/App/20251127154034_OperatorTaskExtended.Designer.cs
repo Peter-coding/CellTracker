@@ -3,6 +3,7 @@ using System;
 using CellTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CellTracker.Api.Migrations.App
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251127154034_OperatorTaskExtended")]
+    partial class OperatorTaskExtended
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1520,63 +1523,6 @@ namespace CellTracker.Api.Migrations.App
                         .IsUnique();
 
                     b.ToTable("OperatorTasks", "cell_tracker");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000001"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Prepare workstation tools and materials",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Initial Setup",
-                            QuantityGoal = 50,
-                            WorkStationId = new Guid("99999999-9999-9999-9999-999999999999")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000002"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Handle and prepare incoming components",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Component Processing",
-                            QuantityGoal = 120,
-                            WorkStationId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000003"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Perform visual and functional inspection",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Quality Check",
-                            QuantityGoal = 80,
-                            WorkStationId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000004"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Prepare boxes and packaging materials",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Package Preparation",
-                            QuantityGoal = 200,
-                            WorkStationId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000005"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Assemble final product parts",
-                            IsDeleted = false,
-                            ModifiedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Final Assembly",
-                            QuantityGoal = 150,
-                            WorkStationId = new Guid("10000000-aaaa-bbbb-cccc-111111111111")
-                        });
                 });
 
             modelBuilder.Entity("CellTracker.Api.Models.Simulation.SimulationModel", b =>

@@ -1,6 +1,10 @@
-﻿using CellTracker.Api.Models.Configuration;
+﻿using CellTracker.Api.Ingestion.Model;
+using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.Dto;
+using CellTracker.Api.Models.Statistics;
 using CellTracker.Api.Repositories;
+using CellTracker.Api.Services.CellService;
+using CellTracker.Api.Services.TelemetryRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace CellTracker.Api.Services.ProductionLineService
@@ -8,9 +12,14 @@ namespace CellTracker.Api.Services.ProductionLineService
     public class ProductionLineService : IProductionLineService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ProductionLineService(IUnitOfWork unitOfWork)
+        private readonly ICellService _cellService;
+        private readonly ITelemetryFetchService _telemetryFetchService;
+
+        public ProductionLineService(IUnitOfWork unitOfWork, ICellService cellService, ITelemetryFetchService telemetryFetchService)
         {
             _unitOfWork = unitOfWork;
+            _cellService = cellService;
+            _telemetryFetchService =  telemetryFetchService;
         }
 
         public async Task<ProductionLine> AddProductionLine(CreateProductionLineDto productionLineDto)
@@ -40,7 +49,7 @@ namespace CellTracker.Api.Services.ProductionLineService
 
         public async Task<IEnumerable<ProductionLine>> GetAllProductionLines()
         {
-            return await _unitOfWork.ProductionLineRepository.GetAll().ToListAsync();
+            return await _unitOfWork.ProductionLineRepository.GetAll().Where(line => line.IsDeleted != true).ToListAsync();
         }
 
         public async Task<ProductionLine> GetProductionLineById(Guid id)
@@ -117,16 +126,100 @@ namespace CellTracker.Api.Services.ProductionLineService
             return cells;
         }
 
+        public async Task<int> GetQuantityGoalInProdLine(Guid id)
+        {
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
+            if (productionLine == null)
+            {
+                throw new ArgumentException("Production Line not found");
+            }
+
+            var cells = await GetCellsInProdLine(id);
+
+           
+            List<WorkStation> workStations = new List<WorkStation>();
+
+            foreach (var cell in cells)
+            {
+                var ws = await _cellService.GetWorkStationsOfCellAsync(cell.Id);
+                workStations.AddRange(ws);
+            }
+
+            int quantityGoal = 0;
+            foreach (var ws in workStations)
+            {
+                if(ws.OperatorTask != null)
+                {
+                    quantityGoal += ws.OperatorTask.QuantityGoal;
+                }
+            }
+
+            return quantityGoal;
+        }
+
+        public async Task<QualityRatio> GetEfficiencyOfProdLine(Guid id)
+        {
+            var currentTime = DateTime.UtcNow;
+
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(id);
+            if (productionLine == null)
+            {
+                throw new ArgumentException("Production Line not found");
+            }
+            
+            var cells = await GetCellsInProdLine(id);
+            List<WorkStation> workStations = new List<WorkStation>();
+            foreach (var cell in cells)
+            {
+                var ws = await _cellService.GetWorkStationsOfCellAsync(cell.Id);
+                workStations.AddRange(ws);
+            }
+
+            List<TelemetryData> telemetryData = new List<TelemetryData>();
+            foreach (var ws in workStations)
+            {
+                telemetryData.AddRange(await _telemetryFetchService.GetTelemetryDataInCurrentShiftOfWorkStationAsync(ws.Id, currentTime));
+            }
+
+            int correct = 0;
+            int defective = 0;
+
+            foreach (var data in telemetryData)
+            {
+                if (data.Error != 0)
+                {
+                    defective++;
+                }
+                else
+                {
+                    correct++;
+                }
+            }
+
+            QualityRatio result = new QualityRatio
+            {
+                CorrectProducts = correct,
+                DefectiveProducts = defective
+            };
+
+            return result;
+        }
+
         private async Task<int> GetNextOrdinalNumberForProdLineInFactory(Guid factoryId)
         {
             var factory = await _unitOfWork.FactoryRepository.GetByIdAsync(factoryId);
-            if (factory != null && !factory.ProductionLines.Any())
+
+            var prodLines = await _unitOfWork.ProductionLineRepository.GetAll()
+                .Where(pl => pl.FactoryId == factoryId)
+                .ToListAsync();
+
+            if (factory != null && !prodLines.Any())
             {
                 return 1;
             }
-            return factory.ProductionLines.Max(pl => pl.OrdinalNumber) + 1;
-        }
 
+            return prodLines.Max(pl => pl.OrdinalNumber) + 1;
+        }
 
     }
 }

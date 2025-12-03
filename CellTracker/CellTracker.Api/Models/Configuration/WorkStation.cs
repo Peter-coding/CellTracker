@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using CellTracker.Api.Models.OperatorTask;
 
 namespace CellTracker.Api.Models.Configuration
 {
@@ -22,5 +23,9 @@ namespace CellTracker.Api.Models.Configuration
 
         [JsonIgnore]
         public Cell Cell { get; set; }
+
+        [JsonIgnore]
+        public OperatorTask.OperatorTask? OperatorTask { get; set; }
+        
     }
 }

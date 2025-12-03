@@ -1,9 +1,12 @@
 ﻿using CellTracker.Api.Configuration.Redis;
 using CellTracker.Api.Ingestion.Model;
 using CellTracker.Api.Ingestion.Queue;
+using CellTracker.Api.Models.Configuration;
 using MQTTnet;
 using MQTTnet.Server;
+using NodaTime;
 using System.Text;
+using System.Text.Json;
 
 namespace CellTracker.Api.WorkerService.Ingestion
 {
@@ -40,15 +43,39 @@ namespace CellTracker.Api.WorkerService.Ingestion
                 string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                 //Console.WriteLine($"#Üzenet érkezett - Topic: {topic}, Tartalom: {payload}");
 
-                var telemetry = new TelemetryData
+                if (topic == "telemetry/celliotpin")
                 {
-                    OperatorId = topic,
-                    WorkStationId = payload,
-                    TimeStamp = DateTime.UtcNow,
-                };
+                    byte error = 0;
+                    if (payload == "red")
+                    {
+                        error = 1;
+                    }
 
-                // Add message to queue
-                await _queue.EnqueueAsync(_rawQueueKey, telemetry, stoppingToken);
+                    var telemetryData = new TelemetryData
+                    {
+                        TimeStamp = DateTime.Now,
+                        WorkStationId = "33333333-3333-3333-3333-333333333333",
+                        IsCompleted = true,
+                        Error = error,
+                        //TODO: Is this needed?
+                        OperatorId = $"OP-IOT",
+                        ProductId = $"PRD-IOT"
+
+                    };
+                    Console.WriteLine("Topic+Payload: " + topic + " - " + payload);
+
+                    // Add message to queue
+                    await _queue.EnqueueAsync(_rawQueueKey, telemetryData, stoppingToken);
+                }
+                else
+                {
+                    TelemetryData telemetry = JsonSerializer.Deserialize<TelemetryData>(payload);
+
+                    // Add message to queue
+                    await _queue.EnqueueAsync(_rawQueueKey, telemetry, stoppingToken);
+                }
+
+                    
             };
 
             await _mqttClient.ConnectAsync(_options, CancellationToken.None);
@@ -56,7 +83,8 @@ namespace CellTracker.Api.WorkerService.Ingestion
             Console.WriteLine("The MQTT client is connected.");
 
             await _mqttClient.SubscribeAsync("telemetry/test", MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
-            
+            await _mqttClient.SubscribeAsync("telemetry/celliotpin", MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+
             await Task.Delay(Timeout.Infinite, stoppingToken);
         }
     }

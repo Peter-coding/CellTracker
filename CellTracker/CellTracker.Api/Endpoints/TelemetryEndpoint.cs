@@ -42,8 +42,9 @@ namespace CellTracker.Api.Endpoints
 
         public async static Task<IResult> GetTelemetryCountPerWorkStationInCurrentShiftAsync(ITelemetryFetchService telemetryFetchService, Guid cellId)
         {
-            var workStationWithCount = await telemetryFetchService.GetTelemetryCountPerWorkStationInCurrentShiftAsync(cellId);
-            return Results.Ok(workStationWithCount);
+            //var workStationWithCount = await telemetryFetchService.GetTelemetryCountPerWorkStationInCurrentShiftAsync(cellId);
+            //return Results.Ok(workStationWithCount);
+            throw new NotImplementedException();
         }
     }
 }

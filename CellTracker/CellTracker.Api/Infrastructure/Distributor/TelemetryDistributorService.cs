@@ -52,7 +52,7 @@ namespace CellTracker.Api.Infrastructure.Distributor
                     }
 
                     // edit groupName for testing
-                    await SendGroupAsync("loginGroup", "Message", telemetryData);
+                    await SendGroupAsync(telemetryData.WorkStationId, "Message", telemetryData);
                 }
                 catch (Exception ex)
                 {

@@ -15,32 +15,32 @@ namespace CellTracker.Api.Endpoints
         {
             var path = $"/{pathPrefix}";
 
-            app.MapPost($"{path}/CreateFactory", CreateFactoryAsync);
-            app.MapGet($"{path}/FactoryById", GetFactoryByIdAsync);
-            app.MapGet($"{path}/AllFactories", GetAllFactories);
-            app.MapPut($"{path}/Factory", UpdateFactoryAsync);
-            app.MapDelete($"{path}/Factory", DeleteFactoryAsync);
+            app.MapPost($"{path}/Factory/Add", CreateFactoryAsync);
+            app.MapGet($"{path}/Factory/Get/{{factoryId}}", GetFactoryByIdAsync);
+            app.MapGet($"{path}/Factory/GetAll", GetAllFactories);
+            app.MapPut($"{path}/Factory/Update", UpdateFactoryAsync);
+            app.MapDelete($"{path}/Factory/Delete/{{factoryId}}", DeleteFactoryAsync);
 
-            app.MapPost($"{path}/CreateProductionLine", CreateProductionLineAsync);
-            app.MapGet($"{path}/ProductionLineById", GetProductionLineByIdAsync);
-            app.MapGet($"{path}/AllProductionLines", GetAllProductionLines);
-            app.MapPut($"{path}/ProductionLine", UpdateProductionLineAsync);
-            app.MapDelete($"{path}/ProductionLine", DeleteProductionLineAsync);
-            app.MapPut($"{path}/SetProdLineStatus", SetProdLineStatus);
-            app.MapPut($"{path}/CellsInProdLine", GetCellsInProdLine);
+            app.MapPost($"{path}/ProdLine/Add", CreateProductionLineAsync);
+            app.MapGet($"{path}/ProdLine/Get/{{productionLineId}}", GetProductionLineByIdAsync);
+            app.MapGet($"{path}/ProdLine/GetAll", GetAllProductionLines);
+            app.MapPut($"{path}/ProdLine/Update", UpdateProductionLineAsync);
+            app.MapDelete($"{path}/ProdLine/Delete/{{productionLineId}}", DeleteProductionLineAsync);
+            app.MapPut($"{path}/ProdLine/SetProdLineStatus", SetProdLineStatus);
+            app.MapGet($"{path}/ProdLine/CellsInProdLine/{{productionLineId}}", GetCellsInProdLine);
+         
+            app.MapPost($"{path}/WorkStation/Add", CreateWorkStationAsync);
+            app.MapGet($"{path}/WorkStation/Get/{{workStationId}}", GetWorkStationByIdAsync);
+            app.MapGet($"{path}/WorkStation/GetAll", GetAllWorkStations);
+            app.MapPut($"{path}/WorkStation/Update", UpdateWorkStationAsync);
+            app.MapDelete($"{path}/WorkStation/Delete/{{workStationId}}", DeleteWorkStationAsync);
 
-            app.MapPost($"{path}/CreateWorkStation", CreateWorkStationAsync);
-            app.MapGet($"{path}/WorkStationById", GetWorkStationByIdAsync);
-            app.MapGet($"{path}/AllWorkStations", GetAllWorkStations);
-            app.MapPut($"{path}/WorkStation", UpdateWorkStationAsync);
-            app.MapDelete($"{path}/WorkStation", DeleteWorkStationAsync);
-
-            app.MapPost($"{path}/CreateCell", CreateCellAsync);
-            app.MapGet($"{path}/GetCellById", GetCellByIdAsync);
-            app.MapGet($"{path}/AllCells", GetAllCells);
-            app.MapPut($"{path}/Cell", UpdateCellAsync);
-            app.MapDelete($"{path}/Cell", DeleteCellAsync);
-            app.MapGet($"{path}/WorkStationsInCell", GetWorkStationsInCell);
+            app.MapPost($"{path}/Cell/Add", CreateCellAsync);
+            app.MapGet($"{path}/Cell/Get/{{cellId}}", GetCellByIdAsync);
+            app.MapGet($"{path}/Cell/GetAll", GetAllCells);
+            app.MapPut($"{path}/Cell/Update", UpdateCellAsync);
+            app.MapDelete($"{path}/Cell/Delete/{{cellId}}", DeleteCellAsync);
+            app.MapGet($"{path}/Cell/WorkStationsInCell/{{cellId}}", GetWorkStationsInCell);
         }
 
         public async static Task<IResult> CreateFactoryAsync(IFactoryService factoryService, CreateFactoryDto factoryDto)
@@ -86,7 +86,7 @@ namespace CellTracker.Api.Endpoints
         public async static Task<IResult> DeleteFactoryAsync(IFactoryService factoryService, Guid factoryId)
         {
             var result = await factoryService.RemoveFactoryById(factoryId);
-            if (result == true)
+            if (result)
             {
                 return Results.Ok();
             }

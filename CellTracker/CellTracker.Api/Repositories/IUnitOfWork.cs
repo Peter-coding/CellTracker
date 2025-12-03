@@ -1,5 +1,6 @@
 ﻿using CellTracker.Api.Models.Configuration;
 using CellTracker.Api.Models.OperatorTask;
+using CellTracker.Api.Models.Simulation;
 namespace CellTracker.Api.Repositories
 {
     public interface IUnitOfWork : IDisposable
@@ -9,6 +10,7 @@ namespace CellTracker.Api.Repositories
         IRepository<ProductionLine> ProductionLineRepository { get; }
         IRepository<Cell> CellRepository { get; }
         IRepository<WorkStation> WorkStationRepository { get; }
+        IRepository<SimulationModel> SimulationRepository { get; }
         Task<int> CompleteAsync();
     }
 }

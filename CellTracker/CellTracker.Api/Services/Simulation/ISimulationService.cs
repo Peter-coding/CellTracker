@@ -6,8 +6,9 @@ namespace CellTracker.Api.Services.Simulation
     public interface ISimulationService
     {
         public Task<IEnumerable<SimulationModel>> GetAllSimulations();
-        public Task<IResult> StartSimulation(CreateSimulationDto parameters);
-        public Task<IResult> StopSimulation(SimulationModel parameters);
+        public Task<IResult> StartSimulation(Guid simulationId);
+        public Task<IResult> StopSimulation(Guid simulationdId);
+        public Task<IResult> ContinueSimulation(Guid simulationdId);
         public Task<SimulationModel> AddSimulation(CreateSimulationDto simulationDto);
         public Task<SimulationModel> GetSimulationById(Guid id);
         public  Task<bool> RemoveSimulationById(Guid id);

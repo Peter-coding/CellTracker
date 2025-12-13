@@ -12,6 +12,7 @@ namespace CellTracker.Api.Endpoints
 
             app.MapPost($"{path}/Start", StartSimulationAsync);
             app.MapPost($"{path}/Stop", StopSimulationAsync);
+            app.MapPost($"{path}/Continue", ContinueSimulationAsync);
             app.MapGet($"{path}/GetAll", GetAllSimulationsAsync);
             app.MapGet($"{path}/Get/{{id}}", GetSimulationByIdAsync);
             app.MapPost($"{path}/Add", AddSimulationAsync);
@@ -19,15 +20,20 @@ namespace CellTracker.Api.Endpoints
             app.MapPut($"{path}/Update", UpdateSimulationAsync);
         }
 
-        public async static Task<IResult> StartSimulationAsync(ISimulationService simulationService, CreateSimulationDto parameters)
+        public async static Task<IResult> StartSimulationAsync(ISimulationService simulationService, Guid simulationId)
         {
-            await simulationService.StartSimulation(parameters);
+            await simulationService.StartSimulation(simulationId);
             return Results.Ok();
         }
 
-        public async static void StopSimulationAsync(ISimulationService simulationService)
+        public async static void StopSimulationAsync(ISimulationService simulationService, Guid simulationId)
         {
-            //await simulationService.StopSimulation();
+            await simulationService.StopSimulation(simulationId);
+        }
+
+        public async static void ContinueSimulationAsync(ISimulationService simulationService, Guid simulationId)
+        {
+            await simulationService.ContinueSimulation(simulationId);
         }
 
         public async static Task<IResult> GetAllSimulationsAsync(ISimulationService simulationService)

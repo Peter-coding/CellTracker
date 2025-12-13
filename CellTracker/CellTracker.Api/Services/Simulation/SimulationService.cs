@@ -18,29 +18,41 @@ namespace CellTracker.Api.Services.Simulation
         private readonly IUnitOfWork _unitOfWork;
         private readonly IProductionLineService _productionLineService;
         private readonly ICellService _cellService;
+        private readonly ISimulationStatusManager _simulationStatusManager;
         private readonly MqttClientOptions _mqttOptions;
         public SimulationService(IUnitOfWork unitOfWork,
             IProductionLineService productionLineService,
             ICellService cellService,
+            ISimulationStatusManager simulationStatusManager,
             MqttClientOptions mqttOptions)
         {
             _unitOfWork = unitOfWork;
             _productionLineService = productionLineService;
             _cellService = cellService;
             _mqttOptions = mqttOptions;
+            _simulationStatusManager = simulationStatusManager;
         }
-        public async Task<IResult> StartSimulation(CreateSimulationDto parameters)
+        public async Task<IResult> StartSimulation(Guid simulationId)
         {
+            var simulation = await _unitOfWork.SimulationRepository.GetByIdAsync(simulationId);
+            if (simulation == null)
+            {
+                throw new ArgumentException($"Simulation with ID {simulationId} not found.");
+            }
+
+            _simulationStatusManager.SetSimulationStatus(simulationId, SimulationStatus.Running);
+
+
             //ProdLine which is used for simulation
-            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(parameters.ProductionLineId);
+            var productionLine = await _unitOfWork.ProductionLineRepository.GetByIdAsync(simulation.ProductionLineId);
 
             if (productionLine == null)
             {
-                throw new ArgumentException($"Production line with ID {parameters.ProductionLineId} not found.");
+                throw new ArgumentException($"Production line with ID {simulation.ProductionLineId} not found.");
             }
 
             //Cells of ProdLine
-            var cells = await _productionLineService.GetCellsInProdLine(parameters.ProductionLineId);
+            var cells = await _productionLineService.GetCellsInProdLine(simulation.ProductionLineId);
 
             //Ordered for simulation
             var orderedCells = cells.OrderBy(c => c.OrdinalNumber).ToList();
@@ -62,7 +74,7 @@ namespace CellTracker.Api.Services.Simulation
             var mqttClient = factory.CreateMqttClient();
 
             //How much time it takes to make a product
-            var minutesOfOneProduct = (double)parameters.MinutesOfSimulation / parameters.NumberOfProductsMade;
+            var minutesOfOneProduct = (double)simulation.MinutesOfSimulation / simulation.NumberOfProductsMade;
             //Time each workstation has to process a product
             var workStationPeriod = (double)minutesOfOneProduct / workStations.Count();
 
@@ -70,7 +82,7 @@ namespace CellTracker.Api.Services.Simulation
             var timer = new PeriodicTimer(TimeSpan.FromMinutes(workStationPeriod));
 
             //All messages that will be sent during the simulation
-            var wsMessagesCount = parameters.NumberOfProductsMade * workStations.Count();
+            var wsMessagesCount = simulation.NumberOfProductsMade * workStations.Count();
 
             //Ofc starting with zero
             int currentMessagesCount = 0;
@@ -80,11 +92,11 @@ namespace CellTracker.Api.Services.Simulation
 
             //Deciding which shift the simulation is for. It's the starting time.
             DateTime startTime;
-            if (parameters.Shift == Shift.Morning)
+            if (simulation.Shift == Shift.Morning)
             {
                 startTime = DateTime.Today.AddHours(6);
             }
-            else if (parameters.Shift == Shift.Afternoon)
+            else if (simulation.Shift == Shift.Afternoon)
             {
                 startTime = DateTime.Today.AddHours(14); // 2:00 PM
             }
@@ -100,63 +112,73 @@ namespace CellTracker.Api.Services.Simulation
             var shiftLength = TimeSpan.FromHours(8);
             var interval = TimeSpan.FromTicks(shiftLength.Ticks / wsMessagesCount);
 
-            //Sending messages in a loop until all messages are sent
+
             while (currentMessagesCount < wsMessagesCount)
             {
-                //If all workstations have processed the current product, start again from the first workstation
-                if (currentWorkStationIndex >= workStations.Count())
+                if(_simulationStatusManager.GetSimulationStatus(simulationId) == SimulationStatus.Running)
                 {
-                    currentWorkStationIndex = 0;
-                } 
-                
-                await timer.WaitForNextTickAsync();
+                    //If all workstations have processed the current product, start again from the first workstation
+                    if (currentWorkStationIndex >= workStations.Count())
+                    {
+                        currentWorkStationIndex = 0;
+                    }
 
-                //WorkStation which will send data
-                var currentWorkStation = workStations.ElementAt(currentWorkStationIndex);
-                //Data that the WS will send
-                var telemetryData = new TelemetryData
-                {
-                    TimeStamp = startTime + interval * currentMessagesCount,
-                    WorkStationId = workStations.ElementAt(currentWorkStationIndex).Id.ToString(),
-                    IsCompleted = true,
-                    Error = 0,     
-                    //TODO: Is this needed?
-                    OperatorId = $"OP-{rnd.Next(100, 999)}", 
-                    ProductId = $"PRD-{rnd.Next(1000, 9999)}"
+                    await timer.WaitForNextTickAsync();
 
-                };
+                    //WorkStation which will send data
+                    var currentWorkStation = workStations.ElementAt(currentWorkStationIndex);
+                    //Data that the WS will send
+                    var telemetryData = new TelemetryData
+                    {
+                        TimeStamp = startTime + interval * currentMessagesCount,
+                        WorkStationId = workStations.ElementAt(currentWorkStationIndex).Id.ToString(),
+                        IsCompleted = true,
+                        Error = 0,
+                        //TODO: Is this needed?
+                        OperatorId = $"OP-{rnd.Next(100, 999)}",
+                        ProductId = $"PRD-{rnd.Next(1000, 9999)}"
 
-                //Creating MQTT message
-                string payload = JsonSerializer.Serialize(telemetryData);
-                var message = new MqttApplicationMessageBuilder()
-                  .WithTopic("telemetry/test")
-                  .WithPayload(payload)
-                  .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
-                  .Build();
+                    };
 
-                //Connecting to MQTT broker
-                while (!mqttClient.IsConnected)
-                {
-                    await mqttClient.ConnectAsync(_mqttOptions);
-                }
-                //Sending MQTT message
-                await mqttClient.PublishAsync(message);
+                    //Creating MQTT message
+                    string payload = JsonSerializer.Serialize(telemetryData);
+                    var message = new MqttApplicationMessageBuilder()
+                      .WithTopic("telemetry/test")
+                      .WithPayload(payload)
+                      .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+                      .Build();
 
-                Console.WriteLine("currentMessagesCount: " + currentMessagesCount + " ------- " + currentWorkStationIndex + " ------- " + telemetryData.WorkStationId);
+                    //Connecting to MQTT broker
+                    while (!mqttClient.IsConnected)
+                    {
+                        await mqttClient.ConnectAsync(_mqttOptions);
+                    }
+                    //Sending MQTT message
+                    await mqttClient.PublishAsync(message);
 
-                //If the product is completed (no error), next WS is used.
-                if (telemetryData.IsCompleted)
-                {
-                    currentMessagesCount++;
-                    currentWorkStationIndex++;
+                    Console.WriteLine("currentMessagesCount: " + currentMessagesCount + " ------- " + currentWorkStationIndex + " ------- " + telemetryData.WorkStationId);
+
+                    //If the product is completed (no error), next WS is used.
+                    if (telemetryData.IsCompleted)
+                    {
+                        currentMessagesCount++;
+                        currentWorkStationIndex++;
+                    }
                 }
             }
             return Results.Ok();
         }
 
-        public Task<IResult> StopSimulation(SimulationModel parameters)
+        public async Task<IResult> StopSimulation(Guid simulatiodId)
         {
-            throw new NotImplementedException();
+            _simulationStatusManager.SetSimulationStatus(simulatiodId, SimulationStatus.Stopped);
+            return Results.Ok();
+        }
+
+        public async Task<IResult> ContinueSimulation(Guid simulatiodId)
+        {
+            _simulationStatusManager.SetSimulationStatus(simulatiodId, SimulationStatus.Running);
+            return Results.Ok();
         }
 
         public async Task<SimulationModel> AddSimulation(CreateSimulationDto simulationDto)
@@ -235,7 +257,5 @@ namespace CellTracker.Api.Services.Simulation
 
             return simulationModel;
         }
-
-
     }
 }

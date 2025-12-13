@@ -75,6 +75,7 @@ namespace CellTracker.Api.Configuration.Extension
             builder.Services.AddScoped<ICellService, CellService>();
             builder.Services.AddScoped<IWorkStationService, WorkStationService>();
             builder.Services.AddScoped<ISimulationService, SimulationService>();
+            builder.Services.AddSingleton<ISimulationStatusManager, SimulationStatusManager>();
 
             // Add UnitOfWork pattern
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

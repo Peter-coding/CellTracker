@@ -187,6 +187,10 @@ namespace CellTracker.Api.Services.TelemetryRepository
             return shiftStart;
         }
 
-
+        public Task<Dictionary<string, int>> GetTelemetryCountPerWorkStationInCurrentShiftAsync(Guid cellId)
+        {
+            //Commented code for starter
+            throw new NotImplementedException();
+        }
     }
 }

@@ -10,9 +10,9 @@ namespace CellTracker.Api.Endpoints
         {
             var path = $"/{pathPrefix}";
 
-            app.MapPost($"{path}/Start", StartSimulationAsync);
-            app.MapPost($"{path}/Stop", StopSimulationAsync);
-            app.MapPost($"{path}/Continue", ContinueSimulationAsync);
+            app.MapGet($"{path}/Start/{{id}}", StartSimulationAsync);
+            app.MapGet($"{path}/Stop/{{id}}", StopSimulationAsync);
+            app.MapGet($"{path}/Continue/{{id}}", ContinueSimulationAsync);
             app.MapGet($"{path}/GetAll", GetAllSimulationsAsync);
             app.MapGet($"{path}/Get/{{id}}", GetSimulationByIdAsync);
             app.MapPost($"{path}/Add", AddSimulationAsync);
@@ -20,20 +20,20 @@ namespace CellTracker.Api.Endpoints
             app.MapPut($"{path}/Update", UpdateSimulationAsync);
         }
 
-        public async static Task<IResult> StartSimulationAsync(ISimulationService simulationService, Guid simulationId)
+        public async static Task<IResult> StartSimulationAsync(ISimulationService simulationService, Guid id)
         {
-            await simulationService.StartSimulation(simulationId);
+            await simulationService.StartSimulation(id);
             return Results.Ok();
         }
 
-        public async static void StopSimulationAsync(ISimulationService simulationService, Guid simulationId)
+        public async static void StopSimulationAsync(ISimulationService simulationService, Guid id)
         {
-            await simulationService.StopSimulation(simulationId);
+            await simulationService.StopSimulation(id);
         }
 
-        public async static void ContinueSimulationAsync(ISimulationService simulationService, Guid simulationId)
+        public async static void ContinueSimulationAsync(ISimulationService simulationService, Guid id)
         {
-            await simulationService.ContinueSimulation(simulationId);
+            await simulationService.ContinueSimulation(id);
         }
 
         public async static Task<IResult> GetAllSimulationsAsync(ISimulationService simulationService)

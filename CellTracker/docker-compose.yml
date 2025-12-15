@@ -24,9 +24,13 @@ services:
       - INFLUXDB_ORG=CellTracker
       - INFLUXDB_BUCKET=CellTracker
       - DISTR_QK=telemetry:distribution_queue
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/cellcert.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=MySecretPassword
     ports:
       - 5010:8080
-      # - 5010:8081
+      - 5011:8081
+    volumes:
+      - ./cellcert.pfx:/app/cellcert.pfx:ro
     depends_on:
       - appdb
       - celltracker.worker

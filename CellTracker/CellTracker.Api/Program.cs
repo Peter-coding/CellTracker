@@ -3,6 +3,7 @@ using CellTracker.Api.Endpoint;
 using CellTracker.Api.Endpoints;
 using CellTracker.Api.ExceptionHandler;
 using CellTracker.Api.Services.SignalR;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CellTracker.Api
 {
@@ -37,6 +38,19 @@ namespace CellTracker.Api
             }
             app.UseHttpsRedirection();
 
+            var certPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
+            var certPassword = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password");
+
+            var cert = new X509Certificate2(certPath, certPassword);
+
+            Console.WriteLine("=== HTTPS CERTIFICATE ===");
+            Console.WriteLine($"Subject     : {cert.Subject}");
+            Console.WriteLine($"Issuer      : {cert.Issuer}");
+            Console.WriteLine($"Thumbprint  : {cert.Thumbprint}");
+            Console.WriteLine($"Valid From  : {cert.NotBefore}");
+            Console.WriteLine($"Valid Until : {cert.NotAfter}");
+            Console.WriteLine($"Cert file name: {Path.GetFileName(certPath)}");
+            Console.WriteLine("=========================");
 
 
             app.MapHub<SignalRHub>("/hub");
